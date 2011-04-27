@@ -30,6 +30,7 @@ set(libkopropertyeditors_SRCS
 #  editors/symbolcombo.cpp
 #  editors/timeedit.cpp
 #  editors/urledit.cpp
+  editors/itemsizepolicyedit.cpp
 )
 
 if(KOPROPERTY_USE_KOLIBS) # TODO remove when we move to independent place

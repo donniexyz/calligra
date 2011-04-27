@@ -46,6 +46,8 @@
 #include "timeedit.h"
 #include "urledit.h"
 */
+#include "editors/itemsizepolicyedit.h"
+
 #include <kdebug.h>
 #include <kglobal.h>
 
@@ -75,6 +77,7 @@ DefaultFactory::DefaultFactory()
     addEditor( KoProperty::UInt, new IntSpinBoxDelegate );
 //! @todo addEditor( KoProperty::ULongLong, new LongLongSpinBoxDelegate );
     addEditor( KoProperty::ValueFromList, new ComboBoxDelegate );
+    addEditor( KoProperty::ItemSizePolicy, new ItemSizePolicyDelegate );
 }
 
 DefaultFactory::~DefaultFactory()

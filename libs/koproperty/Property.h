@@ -118,6 +118,7 @@ enum PropertyType {
     PictureFileURL                /**<url of a pixmap*/,
     DirectoryURL                  /**<url of a directory*/,
     LineStyle                     /**<line style*/,
+    ItemSizePolicy                /**<size policy suitable for items*/,
 
     // Child property types
 /*    Size_Height = 3001,
