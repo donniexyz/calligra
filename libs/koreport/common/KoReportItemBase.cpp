@@ -22,6 +22,8 @@
 #include "krutils.h"
 #include <koproperty/Set.h>
 
+#include <QSizePolicy>
+
 KoReportItemBase::KoReportItemBase()
 {
     Z = 0;
@@ -105,6 +107,19 @@ void KoReportItemBase::setUnit(const KoUnit& u)
 {
     m_pos.setUnit(u);
     m_size.setUnit(u);
+}
+
+bool KoReportItemBase::parseReportSizePolicyData(const QDomElement & elemSource, QSizePolicy &sp)
+{
+    if (elemSource.tagName() != "report:size-policy") {
+        return false;
+    }
+    sp.setHorizontalPolicy(static_cast<QSizePolicy::Policy>(elemSource.attribute("report:horizontal-policy").toInt()));
+    sp.setVerticalPolicy(static_cast<QSizePolicy::Policy>(elemSource.attribute("report:vertical-policy").toInt()));
+    sp.setHorizontalStretch(elemSource.attribute("report:horizontal-stretch").toInt());
+    sp.setVerticalStretch(elemSource.attribute("report:vertical-stretch").toInt());
+
+    return true;
 }
 
 int KoReportItemBase::render(OROPage* page, OROSection* section, QPointF offset, QVariant data, KRScriptHandler* script)

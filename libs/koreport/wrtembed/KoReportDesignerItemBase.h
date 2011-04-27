@@ -37,6 +37,7 @@ class ReportWindow;
 class QDomNode;
 class QDomDocument;
 class QDomElement;
+class QSizePolicy;
 class KoReportDesigner;
 class KRPos;
 class KRSize;
@@ -58,6 +59,7 @@ public:
     static void buildXMLRect(QDomDocument & doc, QDomElement & entity, KRPos *pos, KRSize *siz);
     static void buildXMLTextStyle(QDomDocument & doc, QDomElement & entity, KRTextStyleData ts);
     static void buildXMLLineStyle(QDomDocument & doc, QDomElement & entity, KRLineStyleData ls);
+    static void buildXMLSizePolicy(QDomDocument & doc, QDomElement & entity, QSizePolicy policy);
 
     static QFont getDefaultEntityFont();
     static void  setDefaultEntityFont(const QFont &);

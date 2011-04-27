@@ -31,6 +31,7 @@
 #include <qcheckbox.h>
 #include <qradiobutton.h>
 #include <qsettings.h>
+#include <QSizePolicy>
 #include <kdebug.h>
 
 #include <koproperty/Property.h>
@@ -115,6 +116,18 @@ void KoReportDesignerItemBase::buildXMLLineStyle(QDomDocument & doc, QDomElement
 
     }
     element.setAttribute("report:line-style", l);
+
+    entity.appendChild(element);
+}
+
+void KoReportDesignerItemBase::buildXMLSizePolicy(QDomDocument &doc, QDomElement &entity, QSizePolicy policy)
+{
+    QDomElement element = doc.createElement("report:size-policy");
+
+    element.setAttribute("report:horizontal-policy", policy.horizontalPolicy());
+    element.setAttribute("report:vertical-policy", policy.verticalPolicy());
+    element.setAttribute("report:horizontal-stretch", policy.horizontalStretch());
+    element.setAttribute("report:vertical-stretch", policy.verticalStretch());
 
     entity.appendChild(element);
 }

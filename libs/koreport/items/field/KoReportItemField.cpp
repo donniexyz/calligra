@@ -68,6 +68,11 @@ KoReportItemField::KoReportItemField(QDomNode & element)
                 m_lineColor->setValue(ls.lineColor);
                 m_lineStyle->setValue(ls.style);
             }
+        } else if (n == "report:size-policy") {
+            QSizePolicy sp;
+            if (parseReportSizePolicyData(node.toElement(), sp)) {
+                m_sizePolicy->setValue(sp);
+            }
         } else {
             kDebug() << "while parsing field element encountered unknow element: " << n;
         }
@@ -79,6 +84,9 @@ void KoReportItemField::createProperties()
     m_set = new KoProperty::Set(0, "Field");
 
     QStringList keys, strings;
+
+    QSizePolicy sp;
+    m_sizePolicy = new KoProperty::Property("size-policy", sp, "Size Policy", i18n("Item size policy"), KoProperty::ItemSizePolicy);
 
     m_controlSource = new KoProperty::Property("item-data-source", QStringList(), QStringList(), QString(), i18n("Data Source"));
 
@@ -120,6 +128,7 @@ void KoReportItemField::createProperties()
 #endif
 
     addDefaultProperties();
+    m_set->addProperty(m_sizePolicy);
     m_set->addProperty(m_controlSource);
     m_set->addProperty(m_horizontalAlignment);
     m_set->addProperty(m_verticalAlignment);
@@ -198,6 +207,13 @@ KRLineStyleData KoReportItemField::lineStyle()
     ls.style = (Qt::PenStyle)m_lineStyle->value().toInt();
     return ls;
 }
+
+QSizePolicy KoReportItemField::sizePolicy() const
+{
+    return m_sizePolicy->value().value<QSizePolicy>();
+}
+
+
 // RTTI
 QString KoReportItemField::typeName() const
 {
@@ -232,26 +248,53 @@ int KoReportItemField::render(OROPage* page, OROSection* section,  QPointF offse
     } else {
         str = data.toString();
     }
-
     tb->setText(str);
-    
-    //Work out the size of the text
-    if (tb->canGrow()) {
-        QRect r;
-        if (tb->wordWrap()) {
-            //Grow vertically
-            QFontMetrics metrics(font());
-            QRect temp(tb->position().x(), tb->position().y(), tb->size().width(), 5000); // a large vertical height
-            r = metrics.boundingRect(temp, tb->flags(), str);
-        } else {
-            //Grow Horizontally
-            QFontMetrics metrics(font());
-            QRect temp(tb->position().x(), tb->position().y(), 5000, tb->size().height()); // a large vertical height
-            r = metrics.boundingRect(temp, tb->flags(), str);
-        }
-        tb->setSize(r.size() + QSize(4,4));
+
+    qreal margin = 2.;
+    qreal maxwidth = -1.;
+    qreal maxheight = -1.;
+    if (page) {
+        maxwidth = page->document()->pageOptions().widthPx() - tb->position().x() - (margin * 2);
     }
-    
+    if (section) {
+        // No section height yet, use page
+        maxheight = page->document()->pageOptions().heightPx() - tb->position().y() - (margin * 2);
+    }
+    QRectF r(tb->position(), tb->size());
+    if (sizePolicy().horizontalPolicy() == QSizePolicy::Expanding) {
+        //Grow Horizontally
+        if (maxwidth < 0) {
+            maxwidth = 5000.;
+        }
+        if (maxheight < 0) {
+            maxheight = 5000.;
+        }
+        QFontMetrics metrics(font());
+        QRect temp(tb->position().x(), tb->position().y(), maxwidth, maxheight);
+        r = metrics.boundingRect(temp, tb->flags(), str);
+        if (r.width() < tb->size().width()) {
+            r.setWidth(tb->size().width());
+        }
+        if (r.width() > maxheight) {
+            r.setWidth(maxwidth);
+        }
+    }
+    if (sizePolicy().verticalPolicy() == QSizePolicy::Expanding) {
+        if (maxheight < 0) {
+            maxheight = 5000.;
+        }
+        QFontMetrics metrics(font());
+        QRect temp(tb->position().x(), tb->position().y(), r.width(), maxheight);
+        r = metrics.boundingRect(temp, tb->flags(), str);
+        if (r.height() < tb->size().height()) {
+            r.setHeight(tb->size().height());
+        }
+        if (r.height() > maxheight) {
+            r.setHeight(maxheight);
+        }
+    }
+    tb->setSize(r.size() + QSize(margin*2.,margin*2.));
+
     if (page) {
         page->addPrimitive(tb);
     }

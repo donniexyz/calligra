@@ -144,6 +144,9 @@ void KoReportDesignerItemField::buildXML(QDomDocument & doc, QDomElement & paren
     //Line Style
     buildXMLLineStyle(doc, entity, lineStyle());
 
+    //size policy
+    buildXMLSizePolicy(doc, entity, sizePolicy());
+
 
 #if 0 //Field Totals
     if (m_trackTotal) {

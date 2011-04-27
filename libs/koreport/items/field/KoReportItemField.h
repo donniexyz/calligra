@@ -21,7 +21,7 @@
 #include <QRect>
 #include <qdom.h>
 #include <krsize.h>
-
+#include <QSizePolicy>
 /**
  @author
 */
@@ -48,6 +48,7 @@ public:
 
 protected:
 
+    KoProperty::Property * m_sizePolicy;
     KoProperty::Property * m_controlSource;
     KoProperty::Property * m_horizontalAlignment;
     KoProperty::Property * m_verticalAlignment;
@@ -81,7 +82,8 @@ protected:
     QFont font() const {
         return m_font->value().value<QFont>();
     }
-    
+    QSizePolicy sizePolicy() const;
+
     void setItemDataSource(const QString&);
     
 private:

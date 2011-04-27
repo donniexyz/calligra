@@ -127,6 +127,7 @@ protected:
     static bool parseReportRect(const QDomElement &, KRPos *pos, KRSize *siz);
     static bool parseReportTextStyleData(const QDomElement &, KRTextStyleData &);
     static bool parseReportLineStyleData(const QDomElement &, KRLineStyleData &);
+    static bool parseReportSizePolicyData(const QDomElement &, QSizePolicy &);
 
 
 };
