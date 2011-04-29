@@ -48,7 +48,8 @@ public:
 
 protected:
 
-    KoProperty::Property * m_sizePolicy;
+    KoProperty::Property * m_growthPolicy;
+    KoProperty::Property * m_shrinkPolicy;
     KoProperty::Property * m_controlSource;
     KoProperty::Property * m_horizontalAlignment;
     KoProperty::Property * m_verticalAlignment;
@@ -64,7 +65,6 @@ protected:
     KoProperty::Property* m_lineWeight;
     KoProperty::Property* m_lineStyle;
     KoProperty::Property* m_wordWrap;
-    KoProperty::Property* m_canGrow;
     
     //bool builtinFormat;
     //QString format;
@@ -82,7 +82,8 @@ protected:
     QFont font() const {
         return m_font->value().value<QFont>();
     }
-    QSizePolicy sizePolicy() const;
+    QVariant growthPolicy() const;
+    QVariant shrinkPolicy() const;
 
     void setItemDataSource(const QString&);
     

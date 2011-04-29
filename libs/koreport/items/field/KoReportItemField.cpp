@@ -43,7 +43,6 @@ KoReportItemField::KoReportItemField(QDomNode & element)
     m_horizontalAlignment->setValue(element.toElement().attribute("report:horizontal-align"));
     m_verticalAlignment->setValue(element.toElement().attribute("report:vertical-align"));
 
-    m_canGrow->setValue(element.toElement().attribute("report:can-grow"));
     m_wordWrap->setValue(element.toElement().attribute("report:word-wrap"));
     
     parseReportRect(element.toElement(), &m_pos, &m_size);
@@ -68,10 +67,15 @@ KoReportItemField::KoReportItemField(QDomNode & element)
                 m_lineColor->setValue(ls.lineColor);
                 m_lineStyle->setValue(ls.style);
             }
-        } else if (n == "report:size-policy") {
-            QSizePolicy sp;
+        } else if (n == "report:growth-policy") {
+            QVariantList sp;
             if (parseReportSizePolicyData(node.toElement(), sp)) {
-                m_sizePolicy->setValue(sp);
+                m_growthPolicy->setValue(sp);
+            }
+        } else if (n == "report:shrink-policy") {
+            QVariantList sp;
+            if (parseReportSizePolicyData(node.toElement(), sp)) {
+                m_shrinkPolicy->setValue(sp);
             }
         } else {
             kDebug() << "while parsing field element encountered unknow element: " << n;
@@ -85,8 +89,10 @@ void KoReportItemField::createProperties()
 
     QStringList keys, strings;
 
-    QSizePolicy sp;
-    m_sizePolicy = new KoProperty::Property("size-policy", sp, "Size Policy", i18n("Item size policy"), KoProperty::ItemSizePolicy);
+    QVariantList sp;
+    sp << QVariant(false) << QVariant(false);
+    m_growthPolicy = new KoProperty::Property("growth-policy", QVariant(sp), i18n("Can Grow"), i18n("Item growth policy"), KoProperty::ItemSizePolicy);
+    m_shrinkPolicy = new KoProperty::Property("shrink-policy", QVariant(sp), i18n("Can Shrink"), i18n("Item shrink policy"), KoProperty::ItemSizePolicy);
 
     m_controlSource = new KoProperty::Property("item-data-source", QStringList(), QStringList(), QString(), i18n("Data Source"));
 
@@ -117,7 +123,6 @@ void KoReportItemField::createProperties()
     m_lineStyle = new KoProperty::Property("line-style", Qt::NoPen, i18n("Line Style"), i18n("Line Style"), KoProperty::LineStyle);
 
     m_wordWrap = new KoProperty::Property("word-wrap", QVariant(false), i18n("Word Wrap"));
-    m_canGrow = new KoProperty::Property("can-grow", QVariant(false), i18n("Can Grow"));
     
 #if 0 //Field Totals
     //TODO I do not think we need these
@@ -128,7 +133,8 @@ void KoReportItemField::createProperties()
 #endif
 
     addDefaultProperties();
-    m_set->addProperty(m_sizePolicy);
+    m_set->addProperty(m_growthPolicy);
+    m_set->addProperty(m_shrinkPolicy);
     m_set->addProperty(m_controlSource);
     m_set->addProperty(m_horizontalAlignment);
     m_set->addProperty(m_verticalAlignment);
@@ -140,7 +146,6 @@ void KoReportItemField::createProperties()
     m_set->addProperty(m_lineColor);
     m_set->addProperty(m_lineStyle);
     m_set->addProperty(m_wordWrap);
-    m_set->addProperty(m_canGrow);
     
     //_set->addProperty ( _trackTotal );
     //_set->addProperty ( _trackBuiltinFormat );
@@ -208,11 +213,15 @@ KRLineStyleData KoReportItemField::lineStyle()
     return ls;
 }
 
-QSizePolicy KoReportItemField::sizePolicy() const
+QVariant KoReportItemField::growthPolicy() const
 {
-    return m_sizePolicy->value().value<QSizePolicy>();
+    return m_growthPolicy->value();
 }
 
+QVariant KoReportItemField::shrinkPolicy() const
+{
+    return m_shrinkPolicy->value();
+}
 
 // RTTI
 QString KoReportItemField::typeName() const
@@ -229,7 +238,6 @@ int KoReportItemField::render(OROPage* page, OROSection* section,  QPointF offse
     tb->setFlags(textFlags());
     tb->setTextStyle(textStyle());
     tb->setLineStyle(lineStyle());
-    tb->setCanGrow(m_canGrow->value().toBool());
     tb->setWordWrap(m_wordWrap->value().toBool());
     
     QString str;
@@ -249,10 +257,12 @@ int KoReportItemField::render(OROPage* page, OROSection* section,  QPointF offse
         str = data.toString();
     }
     tb->setText(str);
+    QRectF rect(tb->position(), tb->size());
 
     qreal margin = 2.;
-    qreal maxwidth = -1.;
-    qreal maxheight = -1.;
+    qreal maxwidth = tb->size().width();
+    qreal maxheight = tb->size().height();
+    //TODO subtract page margins
     if (page) {
         maxwidth = page->document()->pageOptions().widthPx() - tb->position().x() - (margin * 2);
     }
@@ -260,40 +270,81 @@ int KoReportItemField::render(OROPage* page, OROSection* section,  QPointF offse
         // No section height yet, use page
         maxheight = page->document()->pageOptions().heightPx() - tb->position().y() - (margin * 2);
     }
-    QRectF r(tb->position(), tb->size());
-    if (sizePolicy().horizontalPolicy() == QSizePolicy::Expanding) {
-        //Grow Horizontally
-        if (maxwidth < 0) {
-            maxwidth = 5000.;
-        }
-        if (maxheight < 0) {
-            maxheight = 5000.;
-        }
-        QFontMetrics metrics(font());
-        QRect temp(tb->position().x(), tb->position().y(), maxwidth, maxheight);
-        r = metrics.boundingRect(temp, tb->flags(), str);
-        if (r.width() < tb->size().width()) {
-            r.setWidth(tb->size().width());
-        }
-        if (r.width() > maxheight) {
-            r.setWidth(maxwidth);
+    if (maxwidth <= 0 || maxheight <= 0) {
+        kWarning()<<"Filed item positioned outside page";
+        return m_pos.toScene().y();
+    }
+    bool shrinkHor = shrinkPolicy().toList()[0].toBool();
+    bool shrinkVer = shrinkPolicy().toList()[1].toBool();
+    bool growHor = growthPolicy().toList()[0].toBool();
+    bool growVer = growthPolicy().toList()[1].toBool();
+    if (shrinkHor || shrinkVer || growHor || growVer) {
+        if (tb->wordWrap()) {
+            QRectF r = rect;
+            QFontMetrics metrics(font());
+            qreal w = growHor ? maxwidth : r.width();
+            QRect temp(tb->position().x(), tb->position().y(), w, maxheight);
+            QRect temp1 = metrics.boundingRect(temp, tb->flags(), str);
+            int textMaxWidth = temp1.width();
+            int textMinHeight = temp1.height();
+
+            if (shrinkHor) {
+                //Shrink horizontally
+                if (textMaxWidth < rect.width()) {
+                    rect.setWidth(textMaxWidth);
+                }
+            }
+            if (shrinkVer) {
+                //Shrink vertically
+                if (textMinHeight < rect.height()) {
+                    rect.setHeight(textMinHeight);
+                }
+            }
+            if (growHor) {
+                if (textMaxWidth > rect.width()) {
+                    rect.setWidth(textMaxWidth);
+                }
+            }
+            if (growVer) {
+                //Grow vertically
+                if (textMinHeight > rect.height()) {
+                    rect.setHeight(textMinHeight);
+                }
+            }
+        } else {
+            QRectF r = rect;
+            QFontMetrics metrics(font());
+            QRect temp(tb->position().x(), tb->position().y(), 5000, 5000);
+            QRect temp1 = metrics.boundingRect(temp, tb->flags(), str);
+            int textMaxWidth = temp1.width();
+            int textMinHeight = temp1.height();
+
+            if (shrinkHor) {
+                //Shrink horizontally
+                if (textMaxWidth < rect.width()) {
+                    rect.setWidth(textMaxWidth);
+                }
+            }
+            if (shrinkVer) {
+                //Shrink vertically
+                if (textMinHeight < rect.height()) {
+                    rect.setHeight(textMinHeight);
+                }
+            }
+            if (growHor) {
+                if (textMaxWidth > rect.width()) {
+                    rect.setWidth(qMin(textMaxWidth, (int)maxwidth));
+                }
+            }
+            if (growVer) {
+                //Grow vertically
+                if (textMinHeight > rect.height()) {
+                    rect.setHeight(qMin(textMinHeight, (int)maxheight));
+                }
+            }
         }
     }
-    if (sizePolicy().verticalPolicy() == QSizePolicy::Expanding) {
-        if (maxheight < 0) {
-            maxheight = 5000.;
-        }
-        QFontMetrics metrics(font());
-        QRect temp(tb->position().x(), tb->position().y(), r.width(), maxheight);
-        r = metrics.boundingRect(temp, tb->flags(), str);
-        if (r.height() < tb->size().height()) {
-            r.setHeight(tb->size().height());
-        }
-        if (r.height() > maxheight) {
-            r.setHeight(maxheight);
-        }
-    }
-    tb->setSize(r.size() + QSize(margin*2.,margin*2.));
+    tb->setSize(rect.size() + QSize(margin*2.,margin*2.));
 
     if (page) {
         page->addPrimitive(tb);

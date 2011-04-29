@@ -109,15 +109,10 @@ void KoReportItemBase::setUnit(const KoUnit& u)
     m_size.setUnit(u);
 }
 
-bool KoReportItemBase::parseReportSizePolicyData(const QDomElement & elemSource, QSizePolicy &sp)
+bool KoReportItemBase::parseReportSizePolicyData(const QDomElement & elemSource, QVariantList &sp)
 {
-    if (elemSource.tagName() != "report:size-policy") {
-        return false;
-    }
-    sp.setHorizontalPolicy(static_cast<QSizePolicy::Policy>(elemSource.attribute("report:horizontal-policy").toInt()));
-    sp.setVerticalPolicy(static_cast<QSizePolicy::Policy>(elemSource.attribute("report:vertical-policy").toInt()));
-    sp.setHorizontalStretch(elemSource.attribute("report:horizontal-stretch").toInt());
-    sp.setVerticalStretch(elemSource.attribute("report:vertical-stretch").toInt());
+    sp << QVariant((bool)(elemSource.attribute("report:horizontally").toInt()));
+    sp << QVariant((bool)(elemSource.attribute("report:vertically").toInt()));
 
     return true;
 }

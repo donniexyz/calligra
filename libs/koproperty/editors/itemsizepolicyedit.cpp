@@ -34,8 +34,8 @@ public:
     {
     }
 
-    QString nameForPolicy(QSizePolicy::Policy p) {
-        const int index = keys.indexOf((int)p);
+    QString nameForPolicy(bool v) {
+        const int index = keys.indexOf(v);
         if (index == -1)
             return names[0];
         return names[index];
@@ -44,16 +44,16 @@ private:
     static QList<QVariant> keysInternal() {
         QList<QVariant> keys;
         keys
-         << QSizePolicy::Fixed
-         << QSizePolicy::Expanding;
+         << false
+         << true;
         return keys;
     }
 
     static QStringList stringsInternal() {
         QStringList strings;
         strings
-         << i18nc("Size Policy", "Fixed")
-         << i18nc("Size Policy", "Expanding");
+         << i18nc("Size Policy", "No")
+         << i18nc("Size Policy", "Yes");
         return strings;
     }
 };
@@ -66,10 +66,11 @@ static const char *ITEMSIZEPOLICY_MASK = "%1, %2";
 
 QString ItemSizePolicyDelegate::displayText( const QVariant& value ) const
 {
-    const QSizePolicy sp(value.value<QSizePolicy>());
+    const QVariantList list = value.toList();
+    Q_ASSERT(list.count() == 2);
     return QString::fromLatin1(ITEMSIZEPOLICY_MASK)
-        .arg(s_itemSizePolicyListData->nameForPolicy(sp.horizontalPolicy()))
-        .arg(s_itemSizePolicyListData->nameForPolicy(sp.verticalPolicy()));
+        .arg(s_itemSizePolicyListData->nameForPolicy(list[0].toBool()))
+        .arg(s_itemSizePolicyListData->nameForPolicy(list[1].toBool()));
 }
 
 //static
@@ -83,29 +84,29 @@ const Property::ListData& ItemSizePolicyDelegate::listData()
 ItemSizePolicyComposedProperty::ItemSizePolicyComposedProperty(Property *property)
         : ComposedPropertyInterface(property)
 {
-    (void)new Property("hor_policy", new ItemSizePolicyListData(),
-        QVariant(), i18n("Hor. Policy"), i18n("Horizontal Policy"), ValueFromList, property);
-    (void)new Property("vert_policy", new ItemSizePolicyListData(),
-        QVariant(), i18n("Vert. Policy"), i18n("Vertical Policy"), ValueFromList, property);
+    new KoProperty::Property("horizontal-policy", QVariant(false), i18n("Horizontally"), i18n("Horizontal size policy"), KoProperty::Auto, property);
+    new KoProperty::Property("vertical-policy", QVariant(false), i18n("Vertically"), i18n("Vertical size policy"), KoProperty::Auto, property);
 }
 
 void ItemSizePolicyComposedProperty::setValue(Property *property,
     const QVariant &value, bool rememberOldValue)
 {
-    const QSizePolicy sp( value.value<QSizePolicy>() );
-    property->child("hor_policy")->setValue(sp.horizontalPolicy(), rememberOldValue, false);
-    property->child("vert_policy")->setValue(sp.verticalPolicy(), rememberOldValue, false);
+    const QVariantList list = value.toList();
+    Q_ASSERT(list.count() == 2);
+    property->child("horizontal-policy")->setValue(list[0], rememberOldValue, false);
+    property->child("vertical-policy")->setValue(list[1], rememberOldValue, false);
 }
 
 void ItemSizePolicyComposedProperty::childValueChanged(Property *child,
     const QVariant &value, bool rememberOldValue)
 {
     Q_UNUSED(rememberOldValue);
-    QSizePolicy sp( child->parent()->value().value<QSizePolicy>() );
-    if (child->name() == "hor_policy") {
-        sp.setHorizontalPolicy(static_cast<QSizePolicy::Policy>(value.toInt()));
-    } else if (child->name() == "vert_policy") {
-        sp.setVerticalPolicy(static_cast<QSizePolicy::Policy>(value.toInt()));
+    Q_ASSERT(child);
+    QVariantList list = child->parent()->value().toList();
+    if (child->name() == "horizontal-policy") {
+        list[0] = value;
+    } else if (child->name() == "vertical-policy") {
+        list[1] = value;
     }
-    child->parent()->setValue(sp, true, false);
+    child->parent()->setValue(list, true, false);
 }

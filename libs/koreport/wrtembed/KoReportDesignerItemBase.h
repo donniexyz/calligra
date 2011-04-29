@@ -59,7 +59,7 @@ public:
     static void buildXMLRect(QDomDocument & doc, QDomElement & entity, KRPos *pos, KRSize *siz);
     static void buildXMLTextStyle(QDomDocument & doc, QDomElement & entity, KRTextStyleData ts);
     static void buildXMLLineStyle(QDomDocument & doc, QDomElement & entity, KRLineStyleData ls);
-    static void buildXMLSizePolicy(QDomDocument & doc, QDomElement & entity, QSizePolicy policy);
+    static void buildXMLSizePolicy(QDomDocument& doc, QDomElement& entity, QString name, QVariant policy);
 
     static QFont getDefaultEntityFont();
     static void  setDefaultEntityFont(const QFont &);

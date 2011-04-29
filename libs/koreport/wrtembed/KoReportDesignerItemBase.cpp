@@ -120,14 +120,13 @@ void KoReportDesignerItemBase::buildXMLLineStyle(QDomDocument & doc, QDomElement
     entity.appendChild(element);
 }
 
-void KoReportDesignerItemBase::buildXMLSizePolicy(QDomDocument &doc, QDomElement &entity, QSizePolicy policy)
+void KoReportDesignerItemBase::buildXMLSizePolicy(QDomDocument &doc, QDomElement &entity, QString name, QVariant policy)
 {
-    QDomElement element = doc.createElement("report:size-policy");
+    Q_ASSERT(policy.toList().count() == 2);
+    QDomElement element = doc.createElement("report:" + name);
 
-    element.setAttribute("report:horizontal-policy", policy.horizontalPolicy());
-    element.setAttribute("report:vertical-policy", policy.verticalPolicy());
-    element.setAttribute("report:horizontal-stretch", policy.horizontalStretch());
-    element.setAttribute("report:vertical-stretch", policy.verticalStretch());
+    element.setAttribute("report:horizontally", policy.toList()[0].toInt());
+    element.setAttribute("report:vertically", policy.toList()[1].toInt());
 
     entity.appendChild(element);
 }

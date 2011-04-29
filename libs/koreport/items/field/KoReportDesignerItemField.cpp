@@ -132,7 +132,6 @@ void KoReportDesignerItemField::buildXML(QDomDocument & doc, QDomElement & paren
     addPropertyAsAttribute(&entity, m_verticalAlignment);
     addPropertyAsAttribute(&entity, m_horizontalAlignment);
     addPropertyAsAttribute(&entity, m_wordWrap);
-    addPropertyAsAttribute(&entity, m_canGrow);
     entity.setAttribute("report:z-index", zValue());
 
     // bounding rect
@@ -145,7 +144,8 @@ void KoReportDesignerItemField::buildXML(QDomDocument & doc, QDomElement & paren
     buildXMLLineStyle(doc, entity, lineStyle());
 
     //size policy
-    buildXMLSizePolicy(doc, entity, sizePolicy());
+    buildXMLSizePolicy(doc, entity, "growth-policy", growthPolicy());
+    buildXMLSizePolicy(doc, entity, "shrink-policy", shrinkPolicy());
 
 
 #if 0 //Field Totals
