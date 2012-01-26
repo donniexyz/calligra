@@ -36,10 +36,12 @@
 #include <kdatewidget.h>
 
 #include <kdeversion.h>
+#ifdef KDEPIMLIBS_FOUND
 #if KDE_IS_VERSION( 4, 5, 0 )
 #include <akonadi/contact/emailaddressselectiondialog.h>
 #include <akonadi/contact/emailaddressselectionwidget.h>
 #include <akonadi/contact/emailaddressselection.h>
+#endif
 #endif
 
 #include <qdatetime.h>
@@ -224,8 +226,11 @@ TaskGeneralPanelImpl::TaskGeneralPanelImpl(QWidget *p, const char *n)
 
     setObjectName(n);
     setupUi(this);
+
+#ifndef KDEPIMLIBS_FOUND
 #if ! KDE_IS_VERSION( 4, 5, 0 )
     chooseLeader->hide();
+#endif
 #endif
 
     connect(namefield, SIGNAL(textChanged(const QString &)), SLOT(checkAllFieldsFilled()));
