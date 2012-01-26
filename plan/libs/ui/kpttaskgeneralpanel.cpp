@@ -36,7 +36,7 @@
 #include <kdatewidget.h>
 
 #include <kdeversion.h>
-#ifdef KDEPIMLIBS_FOUND
+#ifdef PLAN_KDEPIMLIBS_FOUND
 #if KDE_IS_VERSION( 4, 5, 0 )
 #include <akonadi/contact/emailaddressselectiondialog.h>
 #include <akonadi/contact/emailaddressselectionwidget.h>
@@ -227,10 +227,11 @@ TaskGeneralPanelImpl::TaskGeneralPanelImpl(QWidget *p, const char *n)
     setObjectName(n);
     setupUi(this);
 
-#ifndef KDEPIMLIBS_FOUND
-#if ! KDE_IS_VERSION( 4, 5, 0 )
+#ifndef PLAN_KDEPIMLIBS_FOUND
     chooseLeader->hide();
 #endif
+#if ! KDE_IS_VERSION( 4, 5, 0 )
+    chooseLeader->hide();
 #endif
 
     connect(namefield, SIGNAL(textChanged(const QString &)), SLOT(checkAllFieldsFilled()));
@@ -264,6 +265,7 @@ int TaskGeneralPanelImpl::schedulingType() const
 
 void TaskGeneralPanelImpl::changeLeader()
 {
+#ifdef PLAN_KDEPIMLIBS_FOUND
 #if KDE_IS_VERSION( 4, 5, 0 )
     QPointer<Akonadi::EmailAddressSelectionDialog> dlg = new Akonadi::EmailAddressSelectionDialog( this );
     if ( dlg->exec() && dlg ) {
@@ -288,6 +290,7 @@ void TaskGeneralPanelImpl::changeLeader()
             leaderfield->setText( names.join( ", " ) );
         }
     }
+#endif
 #endif
 }
 

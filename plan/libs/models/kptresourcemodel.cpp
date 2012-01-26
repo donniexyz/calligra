@@ -46,7 +46,7 @@
 #include <kio/job.h>
 #include <kdebug.h>
 
-#ifdef KDEPIMLIBS_FOUND
+#ifdef PLAN_KDEPIMLIBS_FOUND
 #include <kabc/addressee.h>
 #include <kabc/vcardconverter.h>
 #endif
@@ -1207,7 +1207,7 @@ bool ResourceItemModel::dropAllowed( const QModelIndex &index, int dropIndicator
 QStringList ResourceItemModel::mimeTypes() const
 {
     return QStringList()
-#ifdef KDEPIMLIBS_FOUND
+#ifdef PLAN_KDEPIMLIBS_FOUND
             << "text/x-vcard"
             << "text/directory"
             << "text/uri-list"
@@ -1248,7 +1248,7 @@ void ResourceItemModel::slotJobFinished( KJob *job )
 
 bool ResourceItemModel::createResources( ResourceGroup *group, const QByteArray &data )
 {
-#ifdef KDEPIMLIBS_FOUND
+#ifdef PLAN_KDEPIMLIBS_FOUND
     KABC::VCardConverter vc;
     KABC::Addressee::List lst = vc.parseVCards( data );
     MacroCommand *m = new MacroCommand( i18ncp( "(qtundo-format)", "Add resource from address book", "Add %1 resources from address book", lst.count() ) );
