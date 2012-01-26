@@ -10,7 +10,7 @@ if(KDE4_BUILD_TESTS)
 endif(KDE4_BUILD_TESTS)
 
 if (KdepimLibs_FOUND)
-#     add_definitions(-DKDEPIMLIBS_FOUND)
+    add_definitions(-DPLAN_KDEPIMLIBS_FOUND)
 endif (KdepimLibs_FOUND)
 
 set( KPLATO_INCLUDES

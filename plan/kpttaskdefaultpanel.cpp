@@ -23,7 +23,7 @@
 #include "kptmycombobox_p.h"
 #include "plansettings.h"
 
-#ifdef KDEPIMLIBS_FOUND
+#ifdef PLAN_KDEPIMLIBS_FOUND
 #if KDE_IS_VERSION( 4, 5, 0 )
 #include <akonadi/contact/emailaddressselectiondialog.h>
 #include <akonadi/contact/emailaddressselectionwidget.h>
@@ -56,8 +56,11 @@ ConfigTaskPanelImpl::ConfigTaskPanelImpl(QWidget *p )
     kcfg_ExpectedEstimate->setMinimumUnit( (Duration::Unit)KPlatoSettings::self()->minimumDurationUnit() );
     kcfg_ExpectedEstimate->setMaximumUnit( (Duration::Unit)KPlatoSettings::self()->maximumDurationUnit() );
 
-#ifndef KDEPIMLIBS_FOUND
-    chooseLeader.hide();
+#ifndef PLAN_KDEPIMLIBS_FOUND
+    chooseLeader->hide();
+#endif
+#if ! KDE_IS_VERSION( 4, 5, 0 )
+    chooseLeader->hide();
 #endif
 
     initDescription();
@@ -118,7 +121,7 @@ void ConfigTaskPanelImpl::initDescription()
 
 void ConfigTaskPanelImpl::changeLeader()
 {
-#ifdef KDEPIMLIBS_FOUND
+#ifdef PLAN_KDEPIMLIBS_FOUND
 #if KDE_IS_VERSION( 4, 5, 0 )
     QPointer<Akonadi::EmailAddressSelectionDialog> dlg = new Akonadi::EmailAddressSelectionDialog( this );
     if ( dlg->exec() && dlg ) {

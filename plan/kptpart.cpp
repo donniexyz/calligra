@@ -85,7 +85,7 @@ Part::Part( QWidget *parentWidget, QObject *parent, bool singleViewMode )
         locale->insertCatalog( "planlibs" );
         locale->insertCatalog( "kdgantt" );
         locale->insertCatalog( "timezones4" );
-#ifdef KDEPIMLIBS_FOUND
+#ifdef PLAN_KDEPIMLIBS_FOUND
         locale->insertCatalog( "kabc" );
 #endif
 

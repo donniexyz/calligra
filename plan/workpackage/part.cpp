@@ -355,7 +355,7 @@ Part::Part( QWidget *parentWidget, QObject *parent, const QVariantList & /*args*
     KLocale *locale = KGlobal::locale();
     if ( locale ) {
         locale->insertCatalog( "planlibs" );
-#ifdef KDEPIMLIBS_FOUND
+#ifdef PLAN_KDEPIMLIBS_FOUND
         locale->insertCatalog( "kabc" );
 #endif
     }
