@@ -36,13 +36,17 @@ class KoStoreDevice;
 class KoSimpleOdtPrimitive;
 class KoStore;
 
+class OROSection;
+
 class KoSimpleOdtDocument
 {
 public:
     KoSimpleOdtDocument();
     ~KoSimpleOdtDocument();
 
+    void startTable(OROSection *section);
     void addPrimitive(KoSimpleOdtPrimitive *data);
+    void addDetailPrimitive(KoSimpleOdtPrimitive *data);
     void setPageOptions(const ReportPageOptions &pageOptions);
     QFile::FileError saveDocument(const QString&);
 
@@ -53,9 +57,10 @@ private:
     
     KoStore *m_store;
     KoXmlWriter* manifestWriter;
-    QMap<int, QList<KoSimpleOdtPrimitive*> > m_pagemap;
     ReportPageOptions m_pageOptions;
     KoStoreDevice *m_stylesDevice;
+
+    QMap<int, QList<KoSimpleOdtPrimitive*> > m_pagemap;
 };
 
 #endif // KOSIMPLEODTDOCUMENT_H

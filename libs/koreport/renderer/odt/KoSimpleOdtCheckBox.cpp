@@ -37,7 +37,7 @@
 
 #include <kmimetype.h>
 
-#include "kptdebug.h"
+#include <kdebug.h>
 
 KoSimpleOdtCheckBox::KoSimpleOdtCheckBox(OROCheck *primitive)
     : KoSimpleOdtPrimitive(primitive)
@@ -175,9 +175,9 @@ bool KoSimpleOdtCheckBox::saveData(KoStore* store, KoXmlWriter* manifestWriter) 
     if (ok) {
         const QString mimetype(KMimeType::findByPath(name, 0 , true)->name());
         manifestWriter->addManifestEntry(name,  mimetype);
-        kDebug(planDbg())<<"manifest:"<<mimetype;
+        kDebug()<<"manifest:"<<mimetype;
     }
     bool cl = store->close();
-    kDebug(planDbg())<<ok<<cl;
+    kDebug()<<ok<<cl;
     return ok && cl;
 }
