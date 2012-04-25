@@ -49,6 +49,14 @@ set(koreport_LIB_SRCS
     renderer/scripting/krscriptsection.cpp
     renderer/scripting/krscriptline.cpp
 
+    renderer/odt/KoSimpleOdtDocument.cpp
+    renderer/odt/KoSimpleOdtCheckBox.cpp
+    renderer/odt/KoSimpleOdtImage.cpp
+    renderer/odt/KoSimpleOdtTextBox.cpp
+    renderer/odt/KoSimpleOdtLine.cpp
+    renderer/odt/KoSimpleOdtPicture.cpp
+    renderer/odt/KoSimpleOdtPrimitive.cpp
+
     renderer/ods/KoSimpleOdsDocument.cpp
     renderer/ods/KoSimpleOdsSheet.cpp
     renderer/ods/KoSimpleOdsCell.cpp

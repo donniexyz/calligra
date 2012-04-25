@@ -36,7 +36,7 @@
 #include <QPainter>
 #include <QPicture>
 
-#include "kptdebug.h"
+#include <kdebug.h>
 
 KoSimpleOdtPicture::KoSimpleOdtPicture(OROPrimitive *primitive)
     : KoSimpleOdtPrimitive(primitive)
@@ -88,7 +88,7 @@ bool KoSimpleOdtPicture::saveData(KoStore* store, KoXmlWriter* manifestWriter) c
     painter.setRenderHint(QPainter::Antialiasing);
     painter.drawPicture(0, 0, *(picture()->picture()));
     painter.end();
-    kDebug(planDbg())<<image.format();
+    kDebug()<<image.format();
     bool ok = image.save(&device, "PNG");
     if (ok) {
         const QString mimetype(KMimeType::findByPath(name, 0 , true)->name());

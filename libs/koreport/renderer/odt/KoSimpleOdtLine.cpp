@@ -39,8 +39,6 @@
 #include <kmimetype.h>
 #include <kdebug.h>
 
-extern int planDbg();
-
 KoSimpleOdtLine::KoSimpleOdtLine(OROLine *primitive)
     : KoSimpleOdtPrimitive(primitive)
 {
@@ -81,7 +79,7 @@ void KoSimpleOdtLine::createStyle(KoGenStyles &coll)
     KoOdfGraphicStyles::saveOdfStrokeStyle(gs, coll, pen);
 
     m_frameStyleName = coll.insert(gs, "F");
-    kDebug(planDbg())<<coll;
+    kDebug()<<coll;
 }
 
 void KoSimpleOdtLine::createBody(KoXmlWriter *bodyWriter) const
@@ -94,7 +92,7 @@ void KoSimpleOdtLine::createBody(KoXmlWriter *bodyWriter) const
     qreal width = ex - sx;
     qreal height = ey - sy;
 
-    kDebug(planDbg())<<line()->startPoint()<<line()->endPoint();
+    kDebug()<<line()->startPoint()<<line()->endPoint();
 
     bodyWriter->startElement("draw:rect");
     bodyWriter->addAttribute("draw:id", itemName());
