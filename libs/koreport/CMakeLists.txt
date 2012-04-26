@@ -38,6 +38,7 @@ set(koreport_LIB_SRCS
     renderer/KoReportHTMLCSSRenderer.cpp
     renderer/KoReportKSpreadRenderer.cpp
     renderer/KoReportODTRenderer.cpp
+    renderer/KoReportODTRenderer2.cpp
     renderer/KoReportRendererBase.cpp
     renderer/KoReportPage.cpp
 
