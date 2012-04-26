@@ -148,7 +148,8 @@ private slots:
 private:
     ReportData *createReportData( const QDomElement &connection );
     ReportData *createReportData( const QString &type );
-    void exportToOdt( KoReportRendererContext &context );
+    void exportToOdtFrames( KoReportRendererContext &context );
+    void exportToOdtTables( KoReportRendererContext &context );
     void exportToOds( KoReportRendererContext &context );
     void exportToHtml( KoReportRendererContext &context );
     void exportToXHtml( KoReportRendererContext &context );

@@ -336,7 +336,8 @@ void ReportView::slotExportFinished( int result )
             KMessageBox::error(this, i18nc( "@info", "Cannot export report. Invalid url:<br>file:<br><filename>%1</filename>", context.destinationUrl.url() ), i18n( "Not Saved" ) );
         } else {
             switch ( p->selectedFormat() ) {
-                case Reports::EF_Odt: exportToOdt( context ); break;
+                case Reports::EF_OdtFrames: exportToOdtFrames( context ); break;
+                case Reports::EF_OdtTables: exportToOdtTables( context ); break;
                 case Reports::EF_Ods: exportToOds( context ); break;
                 case Reports::EF_Html: exportToHtml( context ); break;
                 case Reports::EF_XHtml: exportToXHtml( context ); break;
@@ -349,11 +350,25 @@ void ReportView::slotExportFinished( int result )
     dia->deleteLater();
 }
 
-void ReportView::exportToOdt( KoReportRendererContext &context )
+void ReportView::exportToOdtFrames( KoReportRendererContext &context )
 {
     kDebug(planDbg())<<"Export to odt:"<<context.destinationUrl;
 //    KoReportRendererBase *renderer = new ReportODTRenderer();
-    KoReportRendererBase *renderer = m_factory.createInstance("odt");
+    KoReportRendererBase *renderer = m_factory.createInstance("odtframes");
+    if ( renderer == 0 ) {
+        kError()<<"Cannot create odt renderer";
+        return;
+    }
+    if (!renderer->render(context, m_reportDocument)) {
+        KMessageBox::error(this, i18nc( "@info", "Failed to export to <filename>%1</filename>", context.destinationUrl.prettyUrl()) , i18n("Export to text document failed"));
+    }
+}
+
+void ReportView::exportToOdtTables( KoReportRendererContext &context )
+{
+    kDebug(planDbg())<<"Export to odt:"<<context.destinationUrl;
+    //    KoReportRendererBase *renderer = new ReportODTRenderer();
+    KoReportRendererBase *renderer = m_factory.createInstance("odttables");
     if ( renderer == 0 ) {
         kError()<<"Cannot create odt renderer";
         return;
