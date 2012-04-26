@@ -1,7 +1,6 @@
 /*
  * Kexi Report Plugin
  * Copyright (C) 2010 by Adam Pigg (adam@piggz.co.uk)
- * Copyright (C) 2012 by Dag Andersen (danders@get2net.dk)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,61 +17,98 @@
  */
 
 #include "KoReportODTRenderer.h"
-#include "odt/KoSimpleOdtDocument.h"
-#include "odt/KoSimpleOdtTextBox.h"
-#include "odt/KoSimpleOdtImage.h"
-#include "odt/KoSimpleOdtPicture.h"
-#include "odt/KoSimpleOdtLine.h"
-#include "odt/KoSimpleOdtCheckBox.h"
+#include <QTextDocument>
+#include <QTextTable>
+#include <QTextTableFormat>
+#include <QPainter>
+#include <QTextDocumentWriter>
 #include "renderobjects.h"
-
 #include <kdebug.h>
 
-KoReportODTRenderer::KoReportODTRenderer()
+KoReportODTRenderer::KoReportODTRenderer() : m_document(new QTextDocument()), m_cursor(m_document)
 {
 
 }
 
 KoReportODTRenderer::~KoReportODTRenderer()
 {
+    delete m_document;
 }
 
 bool KoReportODTRenderer::render(const KoReportRendererContext& context, ORODocument* document, int /*page*/)
 {
-    int uid = 1;
-    KoSimpleOdtDocument doc;
-    doc.setPageOptions(document->pageOptions());
-    for (int page = 0; page < document->pages(); page++) {
-        OROPage *p = document->page(page);
-        for (int i = 0; i < p->primitives(); i++) {
-            OROPrimitive *prim = p->primitive(i);
-            if (prim->type() == OROTextBox::TextBox) {
-                KoSimpleOdtPrimitive *sp = new KoSimpleOdtTextBox(static_cast<OROTextBox*>(prim));
-                sp->setUID(uid++);
-                doc.addPrimitive(sp);
-            } else if (prim->type() == OROImage::Image) {
-                KoSimpleOdtPrimitive *sp = new KoSimpleOdtImage(static_cast<OROImage*>(prim));
-                sp->setUID(uid++);
-                doc.addPrimitive(sp);
-            } else if (prim->type() == OROPicture::Picture) {
-                KoSimpleOdtPrimitive *sp = new KoSimpleOdtPicture(static_cast<OROPicture*>(prim));
-                sp->setUID(uid++);
-                doc.addPrimitive(sp);
-            } else if (prim->type() == OROLine::Line) {
-                KoSimpleOdtPrimitive *sp = new KoSimpleOdtLine(static_cast<OROLine*>(prim));
-                sp->setUID(uid++);
-                doc.addPrimitive(sp);
-            } else if (prim->type() == OROCheck::Check) {
-                KoSimpleOdtPrimitive *sp = new KoSimpleOdtCheckBox(static_cast<OROCheck*>(prim));
-                sp->setUID(uid++);
-                doc.addPrimitive(sp);
-            } else if (prim->type() == ORORect::Rect) {
-                // TODO: section background
-            } else {
-                kDebug() << "unhandled primitive type."<<prim->type();
+    QTextTableFormat tableFormat;
+    tableFormat.setCellPadding(5);
+    tableFormat.setHeaderRowCount(1);
+    tableFormat.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
+    tableFormat.setWidth(QTextLength(QTextLength::PercentageLength, 100));
+    QTextTable *table = m_cursor.insertTable(1, 1, tableFormat);
+
+    long renderedSections = 0;
+
+    for (long s = 0; s < document->sections(); s++) {
+        OROSection *section = document->section(s);
+        section->sortPrimatives(OROSection::SortX);
+
+        if (section->type() == KRSectionData::GroupHeader || section->type() == KRSectionData::GroupFooter ||
+            section->type() == KRSectionData::ReportHeader || section->type() == KRSectionData::ReportFooter ||
+            section->type() == KRSectionData::Detail){
+            //Add this section to the document
+
+            //Resize the table to accomodate all the primitives in the section
+            if (table->columns() < section->primitives()) {
+                table->appendColumns(section->primitives() - table->columns());
             }
+
+            if (renderedSections > 0) {
+                //We need to back a row, then forward a row to get at the start cell
+                m_cursor.movePosition(QTextCursor::PreviousRow);
+                m_cursor.movePosition(QTextCursor::NextRow);
+            } else {
+                //On the first row, ensure we are in the first cell after expanding the table
+                while (m_cursor.movePosition(QTextCursor::PreviousCell)){}
+            }
+            //Render the objects in each section
+            for (int i = 0; i < section->primitives(); i++) {
+                //Colour the cell using hte section background colour
+                OROPrimitive * prim = section->primitive(i);
+                QTextTableCell cell = table->cellAt(m_cursor);
+                QTextCharFormat format = cell.format();
+                format.setBackground(section->backgroundColor());
+                cell.setFormat(format);
+
+                if (prim->type() == OROTextBox::TextBox) {
+                    OROTextBox * tb = (OROTextBox*) prim;
+                    m_cursor.insertText(tb->text());
+                } else if (prim->type() == OROImage::Image) {
+                    OROImage * im = (OROImage*) prim;
+
+                    m_cursor.insertImage(im->image().scaled(im->size().width(), im->size().height(), Qt::KeepAspectRatio));
+
+                } else if (prim->type() == OROPicture::Picture) {
+                    OROPicture * im = (OROPicture*) prim;
+
+                    QImage image(im->size().toSize(), QImage::Format_RGB32);
+                    QPainter painter(&image);
+                    im->picture()->play(&painter);
+
+
+                    m_cursor.insertImage(image);
+                } else {
+                    kDebug() << "unhandled primitive type";
+                }
+                m_cursor.movePosition(QTextCursor::NextCell);
+
+            }
+            if (s < document->sections() - 1) {
+                table->appendRows(1);
+            }
+
+            renderedSections++;
         }
     }
-    return doc.saveDocument(context.destinationUrl.path()) == QFile::NoError;
+
+    QTextDocumentWriter writer(context.destinationUrl.toLocalFile());
+    return writer.write(m_document);
 }
 
