@@ -49,7 +49,6 @@ void KoSimpleOdtPrimitive::setPrimitive(OROPrimitive *primitive)
 
 int KoSimpleOdtPrimitive::pageNumber() const
 {
-    //NOTE OROPrimitive page starts at 0, odt starts at 1
     return isValid() && m_primitive->page() ? m_primitive->page()->page() + 1 : 0;
 }
 

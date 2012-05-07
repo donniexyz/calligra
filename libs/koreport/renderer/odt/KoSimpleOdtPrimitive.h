@@ -36,6 +36,7 @@ public:
 
     bool isValid() const;
     void setPrimitive(OROPrimitive *primitive);
+    /// @note OROPrimitive page starts at 0, odt starts at 1
     int pageNumber() const;
     void setUID(int uid);
     int uid() const;
