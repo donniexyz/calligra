@@ -156,10 +156,8 @@ bool KoSimpleOdtDocument::createContent(KoOdfWriteStore* store, KoGenStyles &col
     KoXmlWriter* bodyWriter = store->bodyWriter();
     KoXmlWriter* contentWriter = store->contentWriter();
 
-    Q_ASSERT(manifestWriter);
-    Q_ASSERT(bodyWriter);
-    Q_ASSERT(contentWriter);
     if (!bodyWriter || !contentWriter || !manifestWriter) {
+        kWarning()<<"Failed to created odt writer";
         return false;
     }
 
