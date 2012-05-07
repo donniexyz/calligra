@@ -71,13 +71,13 @@ void KoSimpleOdtPrimitive::createStyle(KoGenStyles &coll)
 {
     KoGenStyle gs(KoGenStyle::GraphicStyle, "graphic");
     gs.addProperty("draw:fill", "none");
-    gs.addProperty("fo:margin", "0.000000000000000pt");
+    gs.addPropertyPt("fo:margin", 0);
     gs.addProperty("style:horizontal-pos", "from-left");
     gs.addProperty("style:horizontal-rel", "page");
     gs.addProperty("style:vertical-pos", "from-top");
     gs.addProperty("style:vertical-rel", "page");
     gs.addProperty("style:wrap", "dynamic");
-    gs.addProperty("style:wrap-dynamic-threshold", "0.000000000000000pt");
+    gs.addPropertyPt("style:wrap-dynamic-threshold", 0);
 
     m_frameStyleName = coll.insert(gs, "F");
 }
