@@ -17,8 +17,8 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KOREPORTODTRENDERER2_H
-#define KOREPORTODTRENDERER2_H
+#ifndef KOREPORTODTFRAMESRENDERER_H
+#define KOREPORTODTFRAMESRENDERER_H
 
 #include <KoReportRendererBase.h>
 
@@ -26,13 +26,13 @@ class QTextDocument;
 
 class OROTextBox;
 
-class KoReportODTRenderer2 : public KoReportRendererBase
+class KoReportODTFramesRenderer : public KoReportRendererBase
 {
 public:
-    KoReportODTRenderer2();
-    virtual ~KoReportODTRenderer2();
+    KoReportODTFramesRenderer();
+    virtual ~KoReportODTFramesRenderer();
     virtual bool render(const KoReportRendererContext& context, ORODocument* document, int page = -1);
         
 };
 
-#endif // KOREPORTODTRENDERER2_H
+#endif // KOREPORTODTFRAMESRENDERER_H

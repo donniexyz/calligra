@@ -17,7 +17,7 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "KoReportODTRenderer2.h"
+#include "KoReportODTFramesRenderer.h"
 #include "odt/KoSimpleOdtDocument.h"
 #include "odt/KoSimpleOdtTextBox.h"
 #include "odt/KoSimpleOdtImage.h"
@@ -28,16 +28,16 @@
 
 #include <kdebug.h>
 
-KoReportODTRenderer2::KoReportODTRenderer2()
+KoReportODTFramesRenderer::KoReportODTFramesRenderer()
 {
 
 }
 
-KoReportODTRenderer2::~KoReportODTRenderer2()
+KoReportODTFramesRenderer::~KoReportODTFramesRenderer()
 {
 }
 
-bool KoReportODTRenderer2::render(const KoReportRendererContext& context, ORODocument* document, int /*page*/)
+bool KoReportODTFramesRenderer::render(const KoReportRendererContext& context, ORODocument* document, int /*page*/)
 {
     int uid = 1;
     KoSimpleOdtDocument doc;
