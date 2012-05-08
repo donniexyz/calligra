@@ -1,5 +1,5 @@
 /*
- * Kexi Report Plugin
+ * Calligra Report Engine
  * Copyright (C) 2010 by Adam Pigg (adam@piggz.co.uk)
  * Copyright (C) 2012 by Dag Andersen (danders@get2net.dk)
  *
@@ -66,8 +66,6 @@ bool KoReportODTFramesRenderer::render(const KoReportRendererContext& context, O
                 KoSimpleOdtPrimitive *sp = new KoSimpleOdtCheckBox(static_cast<OROCheck*>(prim));
                 sp->setUID(uid++);
                 doc.addPrimitive(sp);
-            } else if (prim->type() == ORORect::Rect) {
-                // TODO: section background
             } else {
                 kDebug() << "unhandled primitive type."<<prim->type();
             }

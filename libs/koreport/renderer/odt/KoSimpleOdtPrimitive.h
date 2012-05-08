@@ -1,6 +1,6 @@
 /*
-   KoReport Library
-   Copyright (C) 2011 by Dag Andersen (danders@get2net.dk)
+   Calligra Report Engine
+   Copyright (C) 2011, 2012 by Dag Andersen (danders@get2net.dk)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public

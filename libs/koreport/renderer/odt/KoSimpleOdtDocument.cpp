@@ -1,7 +1,7 @@
 /*
-   KoReport Library
-   Copyright (C) 2010 by Adam Pigg (adam@piggz.co.uk)
-
+   Calligra Report Engine
+   Copyright (C) 2012 by Dag Andersen (danders@get2net.dk)
+   
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
@@ -63,11 +63,6 @@ void KoSimpleOdtDocument::startTable(OROSection* section)
 void KoSimpleOdtDocument::addPrimitive(KoSimpleOdtPrimitive *data)
 {
     m_pagemap[data->pageNumber()].append( data);
-}
-
-void KoSimpleOdtDocument::addDetailPrimitive(KoSimpleOdtPrimitive *data)
-{
-    // Add data to current group, if there is none a new must be created
 }
 
 QFile::FileError KoSimpleOdtDocument::saveDocument(const QString& path)
