@@ -19,8 +19,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KOSIMPLEODTDOCUMENT_H
-#define KOSIMPLEODTDOCUMENT_H
+#ifndef KOODTFRAMESREPORTDOCUMENT_H
+#define KOODTFRAMESREPORTDOCUMENT_H
 
 #include "reportpageoptions.h"
 
@@ -33,19 +33,19 @@
 class KoOdfWriteStore;
 class KoXmlWriter;
 class KoStoreDevice;
-class KoSimpleOdtPrimitive;
+class KoOdtFrameReportPrimitive;
 class KoStore;
 
 class OROSection;
 
-class KoSimpleOdtDocument
+class KoOdtFramesReportDocument
 {
 public:
-    KoSimpleOdtDocument();
-    ~KoSimpleOdtDocument();
+    KoOdtFramesReportDocument();
+    ~KoOdtFramesReportDocument();
 
     void startTable(OROSection *section);
-    void addPrimitive(KoSimpleOdtPrimitive *data);
+    void addPrimitive(KoOdtFrameReportPrimitive *data);
     void setPageOptions(const ReportPageOptions &pageOptions);
     QFile::FileError saveDocument(const QString&);
 
@@ -59,7 +59,7 @@ private:
     ReportPageOptions m_pageOptions;
     KoStoreDevice *m_stylesDevice;
 
-    QMap<int, QList<KoSimpleOdtPrimitive*> > m_pagemap;
+    QMap<int, QList<KoOdtFrameReportPrimitive*> > m_pagemap;
 };
 
-#endif // KOSIMPLEODTDOCUMENT_H
+#endif // KOODTFRAMESREPORTDOCUMENT_H

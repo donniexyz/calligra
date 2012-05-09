@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "KoSimpleOdtPicture.h"
+#include "KoOdtFrameReportPicture.h"
 #include <KoXmlWriter.h>
 #include <KoDpi.h>
 #include <KoOdfGraphicStyles.h>
@@ -38,21 +38,21 @@
 
 #include <kdebug.h>
 
-KoSimpleOdtPicture::KoSimpleOdtPicture(OROPrimitive *primitive)
-    : KoSimpleOdtPrimitive(primitive)
+KoOdtFrameReportPicture::KoOdtFrameReportPicture(OROPrimitive *primitive)
+    : KoOdtFrameReportPrimitive(primitive)
 {
 }
 
-KoSimpleOdtPicture::~KoSimpleOdtPicture()
+KoOdtFrameReportPicture::~KoOdtFrameReportPicture()
 {
 }
 
-OROPicture *KoSimpleOdtPicture::picture() const
+OROPicture *KoOdtFrameReportPicture::picture() const
 {
     return dynamic_cast<OROPicture*>(m_primitive);
 }
 
-void KoSimpleOdtPicture::createBody(KoXmlWriter *bodyWriter) const
+void KoOdtFrameReportPicture::createBody(KoXmlWriter *bodyWriter) const
 {
     bodyWriter->startElement("draw:frame");
     bodyWriter->addAttribute("draw:id", itemName());
@@ -74,7 +74,7 @@ void KoSimpleOdtPicture::createBody(KoXmlWriter *bodyWriter) const
     bodyWriter->endElement(); // draw:frame
 }
 
-bool KoSimpleOdtPicture::saveData(KoStore* store, KoXmlWriter* manifestWriter) const
+bool KoOdtFrameReportPicture::saveData(KoStore* store, KoXmlWriter* manifestWriter) const
 {
     QString name = "Pictures/" + pictureName();
     if (!store->open(name)) {

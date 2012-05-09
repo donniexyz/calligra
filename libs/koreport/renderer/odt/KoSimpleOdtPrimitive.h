@@ -18,8 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KOSIMPLEODTPRIMITIVE_H
-#define KOSIMPLEODTPRIMITIVE_H
+#ifndef KOODTFRAMESREPORTPRIMITIVE_H
+#define KOODTFRAMESREPORTPRIMITIVE_H
 
 #include <QString>
 
@@ -28,11 +28,11 @@ class KoXmlWriter;
 class OROPrimitive;
 class KoStore;
 
-class KoSimpleOdtPrimitive
+class KoOdtFrameReportPrimitive
 {
 public:
-    explicit KoSimpleOdtPrimitive(OROPrimitive *primitive = 0);
-    virtual ~KoSimpleOdtPrimitive();
+    explicit KoOdtFrameReportPrimitive(OROPrimitive *primitive = 0);
+    virtual ~KoOdtFrameReportPrimitive();
 
     bool isValid() const;
     void setPrimitive(OROPrimitive *primitive);
@@ -56,4 +56,4 @@ protected:
 
 };
 
-#endif // KOSIMPLEODTPRIMITIVE_H
+#endif // KOODTFRAMESREPORTPRIMITIVE_H

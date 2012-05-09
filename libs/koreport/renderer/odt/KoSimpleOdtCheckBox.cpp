@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "KoSimpleOdtCheckBox.h"
+#include "KoOdtFrameReportCheckBox.h"
 #include <KoXmlWriter.h>
 #include <KoDpi.h>
 #include <KoOdfGraphicStyles.h>
@@ -39,21 +39,21 @@
 
 #include <kdebug.h>
 
-KoSimpleOdtCheckBox::KoSimpleOdtCheckBox(OROCheck *primitive)
-    : KoSimpleOdtPrimitive(primitive)
+KoOdtFrameReportCheckBox::KoOdtFrameReportCheckBox(OROCheck *primitive)
+    : KoOdtFrameReportPrimitive(primitive)
 {
 }
 
-KoSimpleOdtCheckBox::~KoSimpleOdtCheckBox()
+KoOdtFrameReportCheckBox::~KoOdtFrameReportCheckBox()
 {
 }
 
-OROCheck *KoSimpleOdtCheckBox::checkBox() const
+OROCheck *KoOdtFrameReportCheckBox::checkBox() const
 {
     return static_cast<OROCheck*>(m_primitive);
 }
 
-void KoSimpleOdtCheckBox::createStyle(KoGenStyles &coll)
+void KoOdtFrameReportCheckBox::createStyle(KoGenStyles &coll)
 {
     KoGenStyle gs(KoGenStyle::GraphicStyle, "graphic");
     gs.addProperty("draw:fill", "none");
@@ -78,7 +78,7 @@ void KoSimpleOdtCheckBox::createStyle(KoGenStyles &coll)
     m_frameStyleName = coll.insert(gs, "F");
 }
 
-void KoSimpleOdtCheckBox::createBody(KoXmlWriter *bodyWriter) const
+void KoOdtFrameReportCheckBox::createBody(KoXmlWriter *bodyWriter) const
 {
     bodyWriter->startElement("draw:frame");
     bodyWriter->addAttribute("draw:id", itemName());
@@ -100,12 +100,12 @@ void KoSimpleOdtCheckBox::createBody(KoXmlWriter *bodyWriter) const
     bodyWriter->endElement(); // draw:frame
 }
 
-QString KoSimpleOdtCheckBox::imageName() const
+QString KoOdtFrameReportCheckBox::imageName() const
 {
     return QString("Checkbox_%1.png").arg(m_uid);
 }
 
-bool KoSimpleOdtCheckBox::saveData(KoStore* store, KoXmlWriter* manifestWriter) const
+bool KoOdtFrameReportCheckBox::saveData(KoStore* store, KoXmlWriter* manifestWriter) const
 {
     QString name = "Pictures/" + imageName();
     if (!store->open(name)) {

@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "KoSimpleOdtTextBox.h"
+#include "KoOdtFrameReportTextBox.h"
 #include <KoXmlWriter.h>
 #include <KoDpi.h>
 #include <KoOdfGraphicStyles.h>
@@ -33,21 +33,21 @@
 
 #include <kdebug.h>
 
-KoSimpleOdtTextBox::KoSimpleOdtTextBox(OROTextBox *primitive)
-    : KoSimpleOdtPrimitive(primitive)
+KoOdtFrameReportTextBox::KoOdtFrameReportTextBox(OROTextBox *primitive)
+    : KoOdtFrameReportPrimitive(primitive)
 {
 }
 
-KoSimpleOdtTextBox::~KoSimpleOdtTextBox()
+KoOdtFrameReportTextBox::~KoOdtFrameReportTextBox()
 {
 }
 
-OROTextBox *KoSimpleOdtTextBox::textBox() const
+OROTextBox *KoOdtFrameReportTextBox::textBox() const
 {
     return dynamic_cast<OROTextBox*>(m_primitive);
 }
 
-void KoSimpleOdtTextBox::createStyle(KoGenStyles &coll)
+void KoOdtFrameReportTextBox::createStyle(KoGenStyles &coll)
 {
     QFont font = textBox()->textStyle().font;
 
@@ -83,7 +83,7 @@ void KoSimpleOdtTextBox::createStyle(KoGenStyles &coll)
     m_frameStyleName = coll.insert(gs, "F");
 }
 
-void KoSimpleOdtTextBox::createBody(KoXmlWriter *bodyWriter) const
+void KoOdtFrameReportTextBox::createBody(KoXmlWriter *bodyWriter) const
 {
     bodyWriter->startElement("draw:frame");
     bodyWriter->addAttribute("draw:id", itemName());

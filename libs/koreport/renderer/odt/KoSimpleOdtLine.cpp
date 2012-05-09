@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "KoSimpleOdtLine.h"
+#include "KoOdtFrameReportLine.h"
 #include <KoXmlWriter.h>
 #include <KoDpi.h>
 #include <KoOdfGraphicStyles.h>
@@ -39,21 +39,21 @@
 #include <kmimetype.h>
 #include <kdebug.h>
 
-KoSimpleOdtLine::KoSimpleOdtLine(OROLine *primitive)
-    : KoSimpleOdtPrimitive(primitive)
+KoOdtFrameReportLine::KoOdtFrameReportLine(OROLine *primitive)
+    : KoOdtFrameReportPrimitive(primitive)
 {
 }
 
-KoSimpleOdtLine::~KoSimpleOdtLine()
+KoOdtFrameReportLine::~KoOdtFrameReportLine()
 {
 }
 
-OROLine *KoSimpleOdtLine::line() const
+OROLine *KoOdtFrameReportLine::line() const
 {
     return static_cast<OROLine*>(m_primitive);
 }
 
-void KoSimpleOdtLine::createStyle(KoGenStyles &coll)
+void KoOdtFrameReportLine::createStyle(KoGenStyles &coll)
 {
     KoGenStyle ps(KoGenStyle::ParagraphStyle, "paragraph");
     m_paragraphStyleName = coll.insert(ps, "P");
@@ -82,7 +82,7 @@ void KoSimpleOdtLine::createStyle(KoGenStyles &coll)
     kDebug()<<coll;
 }
 
-void KoSimpleOdtLine::createBody(KoXmlWriter *bodyWriter) const
+void KoOdtFrameReportLine::createBody(KoXmlWriter *bodyWriter) const
 {
     // convert to inches
     qreal sx = INCH_TO_POINT(line()->startPoint().x() / KoDpi::dpiX());

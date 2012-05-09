@@ -18,8 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "KoSimpleOdtDocument.h"
-#include "KoSimpleOdtPrimitive.h"
+#include "KoOdtFramesReportDocument.h"
+#include "KoOdtFrameReportPrimitive.h"
 #include <KoOdfWriteStore.h>
 #include <KoXmlWriter.h>
 #include <KoOdfGraphicStyles.h>
@@ -36,36 +36,36 @@
 
 #include <kdebug.h>
 
-KoSimpleOdtDocument::KoSimpleOdtDocument()
+KoOdtFramesReportDocument::KoOdtFramesReportDocument()
     : manifestWriter(0)
 {
 }
 
-KoSimpleOdtDocument::~KoSimpleOdtDocument()
+KoOdtFramesReportDocument::~KoOdtFramesReportDocument()
 {
-    foreach (const QList<KoSimpleOdtPrimitive*> &lst, m_pagemap) {
-        foreach(KoSimpleOdtPrimitive *p, lst) {
+    foreach (const QList<KoOdtFrameReportPrimitive*> &lst, m_pagemap) {
+        foreach(KoOdtFrameReportPrimitive *p, lst) {
             delete p;
         }
     }
 }
 
-void KoSimpleOdtDocument::setPageOptions(const ReportPageOptions &pageOptions)
+void KoOdtFramesReportDocument::setPageOptions(const ReportPageOptions &pageOptions)
 {
     m_pageOptions = pageOptions;
 }
 
-void KoSimpleOdtDocument::startTable(OROSection* section)
+void KoOdtFramesReportDocument::startTable(OROSection* section)
 {
 
 }
 
-void KoSimpleOdtDocument::addPrimitive(KoSimpleOdtPrimitive *data)
+void KoOdtFramesReportDocument::addPrimitive(KoOdtFrameReportPrimitive *data)
 {
     m_pagemap[data->pageNumber()].append( data);
 }
 
-QFile::FileError KoSimpleOdtDocument::saveDocument(const QString& path)
+QFile::FileError KoOdtFramesReportDocument::saveDocument(const QString& path)
 {
     // create output store
     KoStore *store = KoStore::createStore(path, KoStore::Write,
@@ -81,8 +81,8 @@ QFile::FileError KoSimpleOdtDocument::saveDocument(const QString& path)
         return QFile::NoError;
     }
     // save extra data like images...
-    foreach (const QList<KoSimpleOdtPrimitive*> &lst, m_pagemap) {
-        foreach(KoSimpleOdtPrimitive *p, lst) {
+    foreach (const QList<KoOdtFrameReportPrimitive*> &lst, m_pagemap) {
+        foreach(KoOdtFrameReportPrimitive *p, lst) {
             p->saveData(store, manifestWriter);
         }
     }
@@ -100,7 +100,7 @@ QFile::FileError KoSimpleOdtDocument::saveDocument(const QString& path)
 
 }
 
-void KoSimpleOdtDocument::createStyles(KoGenStyles &coll)
+void KoOdtFramesReportDocument::createStyles(KoGenStyles &coll)
 {
     // convert to inches
     qreal pw = m_pageOptions.widthPx() / KoDpi::dpiX();
@@ -146,7 +146,7 @@ void KoSimpleOdtDocument::createStyles(KoGenStyles &coll)
 
 }
 
-bool KoSimpleOdtDocument::createContent(KoOdfWriteStore* store, KoGenStyles &coll)
+bool KoOdtFramesReportDocument::createContent(KoOdfWriteStore* store, KoGenStyles &coll)
 {
     KoXmlWriter* bodyWriter = store->bodyWriter();
     KoXmlWriter* contentWriter = store->contentWriter();
@@ -205,14 +205,14 @@ bool KoSimpleOdtDocument::createContent(KoOdfWriteStore* store, KoGenStyles &col
     return store->closeContentWriter();
 }
 
-void KoSimpleOdtDocument::createPages(KoXmlWriter* bodyWriter, KoGenStyles &coll)
+void KoOdtFramesReportDocument::createPages(KoXmlWriter* bodyWriter, KoGenStyles &coll)
 {
-    QMap<int, QList<KoSimpleOdtPrimitive*> >::const_iterator it;
+    QMap<int, QList<KoOdtFrameReportPrimitive*> >::const_iterator it;
     for (it = m_pagemap.constBegin(); it != m_pagemap.constEnd(); ++it) {
         bodyWriter->startElement("text:p");
         bodyWriter->addAttribute("text:style-name", "NewPage");
         // all frames need to be *inside* or else LibreWriter shows nothing
-        foreach (KoSimpleOdtPrimitive *data, it.value()) {
+        foreach (KoOdtFrameReportPrimitive *data, it.value()) {
             data->createStyle(coll);
             data->createBody(bodyWriter);
         }

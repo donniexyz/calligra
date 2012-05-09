@@ -18,10 +18,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KOSIMPLEODTIMAGE_H
-#define KOSIMPLEODTIMAGE_H
+#ifndef KOODTFRAMESREPORTIMAGE_H
+#define KOODTFRAMESREPORTIMAGE_H
 
-#include "KoSimpleOdtPrimitive.h"
+#include "KoOdtFrameReportPrimitive.h"
 
 #include <QString>
 
@@ -29,11 +29,11 @@ class KoXmlWriter;
 class OROImage;
 class OROPrimitive;
 
-class KoSimpleOdtImage : public KoSimpleOdtPrimitive
+class KoOdtFrameReportImage : public KoOdtFrameReportPrimitive
 {
 public:
-    KoSimpleOdtImage(OROImage *primitive);
-    virtual ~KoSimpleOdtImage();
+    KoOdtFrameReportImage(OROImage *primitive);
+    virtual ~KoOdtFrameReportImage();
 
     virtual void createBody(KoXmlWriter *bodyWriter) const;
     virtual bool saveData(KoStore *store, KoXmlWriter *manifestWriter) const;
@@ -47,4 +47,4 @@ private:
     QString m_name;
 };
 
-#endif // KOSIMPLEODTIMAGE_H
+#endif // KOODTFRAMESREPORTIMAGE_H

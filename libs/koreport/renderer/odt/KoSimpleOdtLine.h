@@ -18,10 +18,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KOSIMPLEODTLINE_H
-#define KOSIMPLEODTLINE_H
+#ifndef KOODTFRAMESREPORTLINE_H
+#define KOODTFRAMESREPORTLINE_H
 
-#include "KoSimpleOdtPrimitive.h"
+#include "KoOdtFrameReportPrimitive.h"
 
 #include <QString>
 
@@ -34,11 +34,11 @@ class OROPrimitive;
 // This implementation is a hack because neither words nor libre writer
 // implements lines in a good way.
 
-class KoSimpleOdtLine : public KoSimpleOdtPrimitive
+class KoOdtFrameReportLine : public KoOdtFrameReportPrimitive
 {
 public:
-    KoSimpleOdtLine(OROLine *primitive);
-    virtual ~KoSimpleOdtLine();
+    KoOdtFrameReportLine(OROLine *primitive);
+    virtual ~KoOdtFrameReportLine();
 
     virtual void createStyle(KoGenStyles &coll);
     virtual void createBody(KoXmlWriter *bodyWriter) const;
@@ -54,4 +54,4 @@ private:
     QString m_textStyleName;
 };
 
-#endif // KOSIMPLEODTLINE_H
+#endif // KOODTFRAMESREPORTLINE_H

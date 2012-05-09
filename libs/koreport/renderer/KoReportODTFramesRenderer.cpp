@@ -17,53 +17,53 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "KoReportODTFramesRenderer.h"
-#include "odt/KoSimpleOdtDocument.h"
-#include "odt/KoSimpleOdtTextBox.h"
-#include "odt/KoSimpleOdtImage.h"
-#include "odt/KoSimpleOdtPicture.h"
-#include "odt/KoSimpleOdtLine.h"
-#include "odt/KoSimpleOdtCheckBox.h"
+#include "KoOdtFrameReportRenderer.h"
+#include "odt/KoOdtFramesReportDocument.h"
+#include "odt/KoOdtFrameReportTextBox.h"
+#include "odt/KoOdtFrameReportImage.h"
+#include "odt/KoOdtFrameReportPicture.h"
+#include "odt/KoOdtFrameReportLine.h"
+#include "odt/KoOdtFrameReportCheckBox.h"
 #include "renderobjects.h"
 
 #include <kdebug.h>
 
-KoReportODTFramesRenderer::KoReportODTFramesRenderer()
+KoOdtFrameReportRenderer::KoOdtFrameReportRenderer()
 {
 
 }
 
-KoReportODTFramesRenderer::~KoReportODTFramesRenderer()
+KoOdtFrameReportRenderer::~KoOdtFrameReportRenderer()
 {
 }
 
-bool KoReportODTFramesRenderer::render(const KoReportRendererContext& context, ORODocument* document, int /*page*/)
+bool KoOdtFrameReportRenderer::render(const KoReportRendererContext& context, ORODocument* document, int /*page*/)
 {
     int uid = 1;
-    KoSimpleOdtDocument doc;
+    KoOdtFramesReportDocument doc;
     doc.setPageOptions(document->pageOptions());
     for (int page = 0; page < document->pages(); page++) {
         OROPage *p = document->page(page);
         for (int i = 0; i < p->primitives(); i++) {
             OROPrimitive *prim = p->primitive(i);
             if (prim->type() == OROTextBox::TextBox) {
-                KoSimpleOdtPrimitive *sp = new KoSimpleOdtTextBox(static_cast<OROTextBox*>(prim));
+                KoOdtFrameReportPrimitive *sp = new KoOdtFrameReportTextBox(static_cast<OROTextBox*>(prim));
                 sp->setUID(uid++);
                 doc.addPrimitive(sp);
             } else if (prim->type() == OROImage::Image) {
-                KoSimpleOdtPrimitive *sp = new KoSimpleOdtImage(static_cast<OROImage*>(prim));
+                KoOdtFrameReportPrimitive *sp = new KoOdtFrameReportImage(static_cast<OROImage*>(prim));
                 sp->setUID(uid++);
                 doc.addPrimitive(sp);
             } else if (prim->type() == OROPicture::Picture) {
-                KoSimpleOdtPrimitive *sp = new KoSimpleOdtPicture(static_cast<OROPicture*>(prim));
+                KoOdtFrameReportPrimitive *sp = new KoOdtFrameReportPicture(static_cast<OROPicture*>(prim));
                 sp->setUID(uid++);
                 doc.addPrimitive(sp);
             } else if (prim->type() == OROLine::Line) {
-                KoSimpleOdtPrimitive *sp = new KoSimpleOdtLine(static_cast<OROLine*>(prim));
+                KoOdtFrameReportPrimitive *sp = new KoOdtFrameReportLine(static_cast<OROLine*>(prim));
                 sp->setUID(uid++);
                 doc.addPrimitive(sp);
             } else if (prim->type() == OROCheck::Check) {
-                KoSimpleOdtPrimitive *sp = new KoSimpleOdtCheckBox(static_cast<OROCheck*>(prim));
+                KoOdtFrameReportPrimitive *sp = new KoOdtFrameReportCheckBox(static_cast<OROCheck*>(prim));
                 sp->setUID(uid++);
                 doc.addPrimitive(sp);
             } else {

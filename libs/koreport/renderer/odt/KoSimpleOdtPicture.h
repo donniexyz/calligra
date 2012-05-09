@@ -18,10 +18,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KOSIMPLEODTPICTURE_H
-#define KOSIMPLEODTPICTURE_H
+#ifndef KOODTFRAMESREPORTPICTURE_H
+#define KOODTFRAMESREPORTPICTURE_H
 
-#include "KoSimpleOdtPrimitive.h"
+#include "KoOdtFrameReportPrimitive.h"
 
 #include <QString>
 
@@ -30,11 +30,11 @@ class KoStore;
 class OROPicture;
 class OROPrimitive;
 
-class KoSimpleOdtPicture : public KoSimpleOdtPrimitive
+class KoOdtFrameReportPicture : public KoOdtFrameReportPrimitive
 {
 public:
-    KoSimpleOdtPicture(OROPrimitive *primitive);
-    virtual ~KoSimpleOdtPicture();
+    KoOdtFrameReportPicture(OROPrimitive *primitive);
+    virtual ~KoOdtFrameReportPicture();
 
     virtual void createBody(KoXmlWriter *bodyWriter) const;
     bool saveData(KoStore* store, KoXmlWriter* manifestWriter) const;
@@ -44,4 +44,4 @@ public:
     QString pictureName() const { return QString("Picture_%1.png").arg(m_uid); }
 };
 
-#endif // KOSIMPLEODTPICTURE_H
+#endif // KOODTFRAMESREPORTPICTURE_H

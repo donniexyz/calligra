@@ -18,10 +18,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KOSIMPLEODTTEXTBOX_H
-#define KOSIMPLEODTTEXTBOX_H
+#ifndef KOODTFRAMESREPORTTEXTBOX_H
+#define KOODTFRAMESREPORTTEXTBOX_H
 
-#include "KoSimpleOdtPrimitive.h"
+#include "KoOdtFrameReportPrimitive.h"
 
 #include <QString>
 
@@ -30,11 +30,11 @@ class KoXmlWriter;
 class OROTextBox;
 class OROPrimitive;
 
-class KoSimpleOdtTextBox : public KoSimpleOdtPrimitive
+class KoOdtFrameReportTextBox : public KoOdtFrameReportPrimitive
 {
 public:
-    KoSimpleOdtTextBox(OROTextBox *primitive);
-    virtual ~KoSimpleOdtTextBox();
+    KoOdtFrameReportTextBox(OROTextBox *primitive);
+    virtual ~KoOdtFrameReportTextBox();
 
     virtual void createStyle(KoGenStyles &coll);
     virtual void createBody(KoXmlWriter *bodyWriter) const;
@@ -50,4 +50,4 @@ private:
 
 };
 
-#endif // KOSIMPLEODTTEXTBOX_H
+#endif // KOODTFRAMESREPORTTEXTBOX_H

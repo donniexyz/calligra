@@ -18,10 +18,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KOSIMPLEODTCHECKBOX_H
-#define KOSIMPLEODTCHECKBOX_H
+#ifndef KOODTFRAMESREPORTCHECKBOX_H
+#define KOODTFRAMESREPORTCHECKBOX_H
 
-#include "KoSimpleOdtPrimitive.h"
+#include "KoOdtFrameReportPrimitive.h"
 
 #include <QString>
 
@@ -31,11 +31,11 @@ class OROCheck;
 class OROPrimitive;
 
 
-class KoSimpleOdtCheckBox : public KoSimpleOdtPrimitive
+class KoOdtFrameReportCheckBox : public KoOdtFrameReportPrimitive
 {
 public:
-    KoSimpleOdtCheckBox(OROCheck *primitive);
-    virtual ~KoSimpleOdtCheckBox();
+    KoOdtFrameReportCheckBox(OROCheck *primitive);
+    virtual ~KoOdtFrameReportCheckBox();
 
     virtual void createStyle(KoGenStyles &coll);
     virtual void createBody(KoXmlWriter *bodyWriter) const;
@@ -52,4 +52,4 @@ private:
     QString m_textStyleName;
 };
 
-#endif // KOSIMPLEODTCHECKBOX_H
+#endif // KOODTFRAMESREPORTCHECKBOX_H
