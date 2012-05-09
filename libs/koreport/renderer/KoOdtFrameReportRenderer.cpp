@@ -18,12 +18,12 @@
  */
 
 #include "KoOdtFrameReportRenderer.h"
-#include "odt/KoOdtFramesReportDocument.h"
-#include "odt/KoOdtFrameReportTextBox.h"
-#include "odt/KoOdtFrameReportImage.h"
-#include "odt/KoOdtFrameReportPicture.h"
-#include "odt/KoOdtFrameReportLine.h"
-#include "odt/KoOdtFrameReportCheckBox.h"
+#include "odtframe/KoOdtFrameReportDocument.h"
+#include "odtframe/KoOdtFrameReportTextBox.h"
+#include "odtframe/KoOdtFrameReportImage.h"
+#include "odtframe/KoOdtFrameReportPicture.h"
+#include "odtframe/KoOdtFrameReportLine.h"
+#include "odtframe/KoOdtFrameReportCheckBox.h"
 #include "renderobjects.h"
 
 #include <kdebug.h>

@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "KoOdtFramesReportDocument.h"
+#include "KoOdtFrameReportDocument.h"
 #include "KoOdtFrameReportPrimitive.h"
 #include <KoOdfWriteStore.h>
 #include <KoXmlWriter.h>

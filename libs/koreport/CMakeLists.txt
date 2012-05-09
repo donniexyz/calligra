@@ -38,7 +38,7 @@ set(koreport_LIB_SRCS
     renderer/KoReportHTMLCSSRenderer.cpp
     renderer/KoReportKSpreadRenderer.cpp
     renderer/KoReportODTRenderer.cpp
-    renderer/KoReportODTFramesRenderer.cpp
+    renderer/KoOdtFrameReportRenderer.cpp
     renderer/KoReportRendererBase.cpp
     renderer/KoReportPage.cpp
 
@@ -50,13 +50,13 @@ set(koreport_LIB_SRCS
     renderer/scripting/krscriptsection.cpp
     renderer/scripting/krscriptline.cpp
 
-    renderer/odt/KoSimpleOdtDocument.cpp
-    renderer/odt/KoSimpleOdtCheckBox.cpp
-    renderer/odt/KoSimpleOdtImage.cpp
-    renderer/odt/KoSimpleOdtTextBox.cpp
-    renderer/odt/KoSimpleOdtLine.cpp
-    renderer/odt/KoSimpleOdtPicture.cpp
-    renderer/odt/KoSimpleOdtPrimitive.cpp
+    renderer/odtframe/KoOdtFrameReportDocument.cpp
+    renderer/odtframe/KoOdtFrameReportCheckBox.cpp
+    renderer/odtframe/KoOdtFrameReportImage.cpp
+    renderer/odtframe/KoOdtFrameReportTextBox.cpp
+    renderer/odtframe/KoOdtFrameReportLine.cpp
+    renderer/odtframe/KoOdtFrameReportPicture.cpp
+    renderer/odtframe/KoOdtFrameReportPrimitive.cpp
 
     renderer/ods/KoSimpleOdsDocument.cpp
     renderer/ods/KoSimpleOdsSheet.cpp
