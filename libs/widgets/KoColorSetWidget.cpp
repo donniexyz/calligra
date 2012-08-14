@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (c) 2007 Casper Boemann <cbr@boemann.dk>
+   Copyright (c) 2007, 2012 C. Boemann <cbo@boemann.dk>
    Copyright (c) 2007-2008 Fredy Yanardi <fyanardi@gmail.com>
 
    This library is free software; you can redistribute it and/or
@@ -38,7 +38,6 @@
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <kicon.h>
 
 #include <KoColorSet.h>
 #include <KoColorPatch.h>
@@ -75,7 +74,7 @@ void KoColorSetWidget::KoColorSetWidgetPrivate::fillColors()
     colorSetContainer = new QWidget();
     colorSetLayout = new QGridLayout();
     colorSetLayout->setMargin(3);
-    colorSetLayout->setSpacing(1);
+    colorSetLayout->setSpacing(0); // otherwise the use can click where there is none
     colorSetContainer->setBackgroundRole(QPalette::Dark);
     for(int i = 0; i<16; i++) {
         colorSetLayout->setColumnMinimumWidth(i, 12);
@@ -85,7 +84,8 @@ void KoColorSetWidget::KoColorSetWidgetPrivate::fillColors()
     if (colorSet) {
         for( int i = 0, p= 0; i < colorSet->nColors(); i++) {
             KoColorPatch *patch = new KoColorPatch(colorSetContainer);
-            patch->setFrameStyle(QFrame::NoFrame);
+            patch->setFrameStyle(QFrame::Plain | QFrame::Box);
+            patch->setLineWidth(1);
             patch->setColor(colorSet->getColor(i).color);
             connect(patch, SIGNAL(triggered(KoColorPatch *)), thePublic, SLOT(colorTriggered(KoColorPatch *)));
             colorSetLayout->addWidget(patch, p/16, p%16);
@@ -244,6 +244,11 @@ void KoColorSetWidget::setColorSet(KoColorSet *colorSet)
 
     d->colorSet = colorSet;
     d->fillColors();
+}
+
+KoColorSet* KoColorSetWidget::colorSet()
+{
+    return d->colorSet;
 }
 
 void KoColorSetWidget::resizeEvent(QResizeEvent *event)

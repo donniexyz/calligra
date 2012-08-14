@@ -17,6 +17,7 @@ set(wordsprivate_LIB_SRCS
     KWDocument.cpp
     KWGui.cpp
     KWView.cpp
+    KWPart.cpp
     KWPage.cpp
     KWPageCacheManager.cpp
     KWPageManager.cpp
@@ -54,6 +55,7 @@ set(wordsprivate_LIB_SRCS
     dialogs/KWPrintingDialog.cpp
     dialogs/KWCreateBookmarkDialog.cpp
     dialogs/KWSelectBookmarkDialog.cpp
+    dialogs/KWConfigureDialog.cpp
 
     dockers/KWStatisticsDocker.cpp
     dockers/KWStatistics.cpp
@@ -65,8 +67,6 @@ set(wordsprivate_LIB_SRCS
     commands/KWNewPageStyleCommand.cpp
     commands/KWFrameDeleteCommand.cpp
     commands/KWFrameCreateCommand.cpp
-    commands/KWClipFrameCommand.cpp
-    commands/KWRemoveFrameClipCommand.cpp
     commands/KWChangePageStyleCommand.cpp
     commands/KWShapeCreateCommand.cpp
 )

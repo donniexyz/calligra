@@ -115,7 +115,7 @@ void ODrawToOdf::processRectangle(const OfficeArtSpContainer& o, Writer& out)
 {
     // TODO: Use client->isPlaceholder - might require an update of the
     // placeholderAllowed function in the PPT filter.  Trying to save as many
-    // shapes into draw:text-box at the moment, becasue vertical allignment in
+    // shapes into draw:text-box at the moment, becasue vertical alignment in
     // draw:custom-shape does not work properly (bug 288047).
     if (o.clientData && client->processRectangleAsTextBox(*o.clientData)) {
         processTextBox(o, out);
@@ -418,7 +418,10 @@ void ODrawToOdf::processPictureFrame(const OfficeArtSpContainer& o, Writer& out)
     if (!ds.pib()) return;
 
     out.xml.startElement("draw:frame");
-    processStyleAndText(o, out);
+    processStyle(o, out);
+
+    //NOTE: OfficeArtClienData might contain additional information
+    //about a shape.
 
     QString url;
     if (client) {

@@ -39,6 +39,7 @@
 #include <QDesktopWidget>
 #include <QKeyEvent>
 #include <KTabWidget>
+#include <KoIcon.h>
 #include "KexiSearchLineEdit.h"
 #include "KexiUserFeedbackAgent.h"
 #include <kexiutils/SmallToolButton.h>
@@ -88,6 +89,7 @@ public:
     
     void showTab(const QString& name);
     
+    bool isRolledUp();
 
 public slots:
     void setMainMenuContent(QWidget *w);
@@ -96,6 +98,7 @@ public slots:
     void hideMainMenu();
     void toggleMainMenu();
     void activateSearchLineEdit();
+    void toggleRollDown();
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent* event);
@@ -877,7 +880,7 @@ KexiTabbedToolBar::KexiTabbedToolBar(QWidget *parent)
     d->helpMenu = new KHelpMenu(this, KGlobal::mainComponent().aboutData(),
                                 true/*showWhatsThis*/, d->ac);
     QAction* help_report_bug_action = d->ac->action("help_report_bug");
-    help_report_bug_action->setIcon(KIcon("tools-report-bug")); // good icon for toolbar
+    help_report_bug_action->setIcon(koIcon("tools-report-bug")); // good icon for toolbar
     help_report_bug_action->setWhatsThis(i18n("Shows bug reporting tool for Kexi application."));
     QAction* help_whats_this_action =  d->ac->action("help_whats_this");
     help_whats_this_action->setWhatsThis(i18n("Activates \"What's This\" tool."));
@@ -987,7 +990,7 @@ KexiTabbedToolBar::KexiTabbedToolBar(QWidget *parent)
       addAction(tbar, "help_whats_this");
       addAction(tbar, "help_report_bug");
       a = d->ac->action("help_report_bug");
-      a->setIcon(KIcon("tools-report-bug"));
+      a->setIcon(koIcon("tools-report-bug"));
       addAction(tbar, "help_about_app");
       addAction(tbar, "help_about_kde");
     */
@@ -1407,6 +1410,16 @@ void KexiTabbedToolBar::hideTab(const QString& name)
 void KexiTabbedToolBar::showTab(const QString& name)
 {
     d->showTab(name);
+}
+
+bool KexiTabbedToolBar::isRolledUp()
+{
+    return d->rolledUp;
+}
+
+void KexiTabbedToolBar::toggleRollDown()
+{
+    slotTabDoubleClicked(-1);//use -1 just to rolldown/up the tabbar
 }
 
 
@@ -1979,7 +1992,7 @@ public:
     KActionMenu *action_tools_scripts;
 
     //! window menu
-    KAction *action_window_next, *action_window_previous;
+    KAction *action_window_next, *action_window_previous, *action_window_fullscreen;
 
     //! global
     KAction *action_show_help_menu;

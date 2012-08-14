@@ -4,6 +4,7 @@
  * Copyright (C) 2005-2006, 2009 Thomas Zander <zander@kde.org>
  * Copyright (C) 2008 Pierre Ducroquet <pinaraf@pinaraf.info>
  * Copyright (C) 2010 by Nokia, Matus Hanzes
+ * Copyright 2012 Friedrich W. H. Kossebau <kossebau@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -52,13 +53,13 @@ public:
     virtual ~KWPageBackground()
     {
     }
-    virtual void paint(QPainter &painter, const KoViewConverter &converter, KoShapePaintingContext &)
+    virtual void paint(QPainter &painter, const KoViewConverter &converter, KoShapePaintingContext &paintContext)
     {
         if (background()) {
             applyConversion(painter, converter);
             QPainterPath p;
             p.addRect(QRectF(QPointF(), size()));
-            background()->paint(painter, p);
+            background()->paint(painter, converter, paintContext, p);
         }
     }
     virtual bool loadOdf(const KoXmlElement &, KoShapeLoadingContext &)
@@ -132,7 +133,6 @@ void KWFrameLayout::createNewFramesForPage(int pageNumber)
             shape->setPosition(QPointF(0, page.offsetInDocument()));
             background = new KWFrame(shape, m_backgroundFrameSet);
             shape->setTextRunAroundSide(KoShape::RunThrough);
-            // TODO pagespread
         }
         background->shape()->setBackground(page.pageStyle().background());
     } else {
@@ -159,14 +159,11 @@ void KWFrameLayout::createNewFramesForPage(int pageNumber)
     }
 
     // create main text frame. All columns of them.
-    int columns = page.pageStyle().columns().columns;
+    int columns = page.pageStyle().columns().count;
     Q_ASSERT(columns >= 1);
     KWTextFrameSet *fs = getOrCreate(Words::MainTextFrameSet, page);
     QRectF rect(QPointF(0, page.offsetInDocument()), QSizeF(page.width(), page.height()));
-#if 0
-        if (page.pageSide() == KWPage::PageSpread)
-            rect.setWidth(rect.width() / 2);
-#endif
+
     kDebug(32001) << "MainTextFrame" << fs << "pageRect=" << rect << "columns=" << columns;
     foreach (KWFrame *frame, framesInPage(rect)) {
         if (frame->frameSet() == fs) {
@@ -189,116 +186,7 @@ void KWFrameLayout::createNewFramesForPage(int pageNumber)
         new KWFrame(shape, fs);
     }
 
-#if 0
-    if (page.pageSide() == KWPage::PageSpread) {
-
-        // inline helper class
-        class PageSpreadShapeFactory
-        {
-        public:
-            PageSpreadShapeFactory(KWFrameLayout *parent) {
-                m_parent = parent;
-            }
-            void create(const KWPage &page, KWTextFrameSet *fs) {
-                KWFrame *frame;
-                if (fs->textFrameSetType() == Words::MainTextFrameSet) {
-                    KoShape * shape = m_parent->createTextShape(page);
-                    shape->setPosition(QPointF(page.width() / 2 + 1, shape->position().y()));
-                    shape->setSize(QSizeF(page.pageStyle().pageLayout().width, page.pageStyle().pageLayout().height));
-                    frame = new KWTextFrame(shape, fs);
-                } else {
-                    frame = m_parent->createCopyFrame(fs, page);
-                    frame->shape()->setPosition(QPointF(page.width() / 2 + 1, frame->shape()->position().y()));
-                    frame->shape()->setSize(QSizeF(page.pageStyle().pageLayout().width, page.pageStyle().pageLayout().height));
-                }
-            }
-            KWFrameLayout *m_parent;
-        };
-        PageSpreadShapeFactory factory(this);
-#if 0
-        if (shouldHaveHeaderOrFooter(pageNumber + 1, true, &origin)) {
-            KWTextFrameSet *fs = getOrCreate(origin, m_pageManager->page(pageNumber + 1));
-            if (!frameOn(fs, pageNumber + 1))
-                factory.create(page, fs);
-        }
-        if (shouldHaveHeaderOrFooter(pageNumber + 1, false, &origin)) {
-            KWTextFrameSet *fs = getOrCreate(origin, m_pageManager->page(pageNumber + 1));
-            if (!frameOn(fs, pageNumber + 1))
-                factory.create(page, fs);
-        }
-#else
-    #ifdef __GNUC__
-        #warning FIXME: port to textlayout-rework
-    #endif
-#endif
-        if (page.pageStyle().hasMainTextFrame()) {
-            int columns = page.pageStyle().columns().columns;
-            KWTextFrameSet *fs = getOrCreate(Words::MainTextFrameSet, page);
-            QRectF rect(QPointF(page.width(), page.offsetInDocument()),
-                        QSizeF(page.width() / 2,  page.height()));
-#if 0
-            foreach (KWFrame *frame, framesInPage(rect)) {
-                if (frame->frameSet() == fs) {
-                    columns--;
-                    if (columns < 0) {
-                        fs->removeFrame(frame);
-                        delete frame;
-                    }
-                }
-            }
-#endif
-            while (columns > 0) {
-                factory.create(page, fs);
-                columns--;
-            }
-        }
-    }
-#endif
-
-#if 0
-    bool odd = false; // an odd number of pages back, so frameOnBothSheets matters
-    for (int i = pageNumber - 2; i < pageNumber; i++) {
-        if (i < m_pageManager->begin().pageNumber()) {
-            odd = true;
-            continue;
-        }
-
-        KWPage prevPage = m_pageManager->page(i);
-        QRectF pageRect = prevPage.rect(pageNumber);
-        foreach (KWFrame *frame, framesInPage(pageRect)) {
-            if (odd && !frame->frameOnBothSheets())
-                continue;
-            if (!(frame->newFrameBehavior() == Words::ReconnectNewFrame ||
-                    frame->newFrameBehavior() == Words::CopyNewFrame))
-                continue;
-            if (Words::isAutoGenerated(frame->frameSet()))
-                continue; // these are copied above already.
-            KWFrame *f = 0;
-            KWTextFrameSet *tfs = dynamic_cast<KWTextFrameSet*>(frame->frameSet());
-            if (tfs && frame->newFrameBehavior() != Words::CopyNewFrame) {
-                f = new KWTextFrame(createTextShape(page), tfs);
-            } else {
-                Q_ASSERT(frame->newFrameBehavior() == Words::CopyNewFrame);
-                Q_ASSERT(frame->frameSet());
-                Q_ASSERT(frame->frameSet()->frameCount() > 0);
-                f = new KWFrame(new KWCopyShape(frame->frameSet()->frames().first()->shape(),
-                            m_pageManager), frame->frameSet());
-            }
-            const qreal y = frame->shape()->position().y();
-            qreal offsetFromPage = y - pageRect.top();
-            f->copySettings(frame);
-            f->shape()->setPosition(QPointF(frame->shape()->position().x(),
-                                            page.offsetInDocument() + offsetFromPage));
-        }
-        odd = true;
-    }
-#endif
-
     layoutFramesOnPage(pageNumber);
-#if 0
-    if (page.pageSide() == KWPage::PageSpread)
-        layoutFramesOnPage(pageNumber + 1);
-#endif
 }
 
 void KWFrameLayout::layoutFramesOnPage(int pageNumber)
@@ -339,33 +227,22 @@ void KWFrameLayout::layoutFramesOnPage(int pageNumber)
     layout.leftPadding = page.leftPadding();
     layout.rightPadding = page.rightPadding();
     qreal left = 0, width = page.width();
-    if (page.pageSide() == KWPage::PageSpread) {
-        width /= 2;
-        layout.leftMargin = page.pageEdgeMargin();
-        layout.rightMargin = page.marginClosestBinding();
-        if (page.pageNumber() != pageNumber) { // doing the 'right' part
-            left = width;
-            qSwap(layout.leftMargin, layout.rightMargin);
-            qSwap(layout.leftPadding, layout.rightPadding);
-        }
-    }
     qreal textWidth = width - layout.leftMargin - layout.rightMargin
                             - layout.leftPadding - layout.rightPadding;
 
     KWPageStyle pageStyle = page.pageStyle();
-    const int columns = pageStyle.columns().columns;
-    int columnsCount = columns;
+    KoColumns columns = pageStyle.columns();
     int columnIndex = 0;
     KWFrame **main;
     KWFrame *footer = 0, *header = 0;
     KWFrame *pageBackground = 0;
-    main = new KWFrame*[columnsCount];
-    if (columns > 0)
+    main = new KWFrame*[columns.count];
+    if (columns.count > 0)
         main[0] = 0;
     QRectF pageRect(left, page.offsetInDocument(), width, page.height());
     QList<KWFrame *> frames = framesInPage(pageRect);
 
-    kDebug(32001) << "pageNumber=" << pageNumber << "columns=" << pageStyle.columns().columns << "frameCount=" << frames.count();
+    kDebug(32001) << "pageNumber=" << pageNumber << "columns=" << columns.count << "frameCount=" << frames.count();
     foreach (KWFrame *frame, frames) {
         KWTextFrameSet *textFrameSet = 0;
         switch (frame->frameSet()->type()) {
@@ -421,8 +298,8 @@ void KWFrameLayout::layoutFramesOnPage(int pageNumber)
             break;
         }
         case Words::MainTextFrameSet: {
-            if (columnIndex == columnsCount) {
-                kWarning(32001) << "Too many columns present on page, ignoring 1, columnsCount=" << columnsCount;
+            if (columnIndex == columns.count) {
+                kWarning(32001) << "Too many columns present on page, ignoring 1, columns.count=" << columns.count;
                 break;
             }
             main[columnIndex] = frame;
@@ -443,9 +320,9 @@ void KWFrameLayout::layoutFramesOnPage(int pageNumber)
     pageBackground = frameOn(m_backgroundFrameSet, pageNumber);
 
     --minZIndex;
-    for (int i = 0; i < columns; ++i) {
-        Q_ASSERT_X(main[i], __FUNCTION__, QString("No KWFrame for column=%1 columnCount=%2").arg(i).arg(columns).toLocal8Bit());
-        Q_ASSERT_X(main[i]->shape(), __FUNCTION__, QString("No TextShape in KWFrame for column=%1 columnCount=%2").arg(i).arg(columns).toLocal8Bit());
+    for (int i = 0; i < columns.count; ++i) {
+        Q_ASSERT_X(main[i], __FUNCTION__, QString("No KWFrame for column=%1 columnCount=%2").arg(i).arg(columns.count).toLocal8Bit());
+        Q_ASSERT_X(main[i]->shape(), __FUNCTION__, QString("No TextShape in KWFrame for column=%1 columnCount=%2").arg(i).arg(columns.count).toLocal8Bit());
         if (main[i] && main[i]->shape())
             main[i]->shape()->setZIndex(minZIndex);
     }
@@ -497,31 +374,62 @@ void KWFrameLayout::layoutFramesOnPage(int pageNumber)
     }
 
     // actually move / size the frames.
-    if (columns > 0 && main[0]) {
-        const qreal columnWidth = (textWidth
-                - page.pageStyle().columns().columnSpacing * (columns- 1 ))/ columns;
-        const qreal columnStep = columnWidth + page.pageStyle().columns().columnSpacing;
-        QPointF *points = new QPointF[columns];
-        for (int i = 0; i < columns; i++)
-            points[i] = QPointF(left + layout.leftMargin + layout.leftPadding +columnStep * i, resultingPositions[3]);
-        for (int i = 0; i < columns; i++) {
-            for (int f = 0; f < columns; f++) {
+    if (columns.count > 0 && main[0]) {
+        const qreal fullColumnHeight = resultingPositions[4] - resultingPositions[3];
+        const qreal columnsXOffset = left + layout.leftMargin + layout.leftPadding;
+
+        QRectF *columnRects = new QRectF[columns.count];
+        // uniform columns?
+        if (columns.columnData.isEmpty()) {
+            const qreal columnWidth = (textWidth - columns.gapWidth * (columns.count - 1)) / columns.count;
+            const qreal columnStep = columnWidth + columns.gapWidth;
+
+            for (int i = 0; i < columns.count; i++) {
+                columnRects[i] = QRectF(
+                    columnsXOffset + columnStep * i,
+                    resultingPositions[3],
+                    columnWidth,
+                    fullColumnHeight);
+            }
+        } else {
+            qreal totalRelativeWidth = 0.0;
+            foreach(const KoColumns::ColumnDatum &cd, columns.columnData) {
+                totalRelativeWidth += cd.relativeWidth;
+            }
+            int relativeColumnXOffset = 0;
+            for (int i = 0; i < columns.count; i++) {
+                const KoColumns::ColumnDatum &columnDatum = columns.columnData.at(i);
+                const qreal columnWidth = textWidth * columnDatum.relativeWidth / totalRelativeWidth;
+                const qreal columnXOffset = textWidth * relativeColumnXOffset / totalRelativeWidth;
+
+                columnRects[i] = QRectF(
+                    columnsXOffset + columnXOffset + columnDatum.leftMargin,
+                    resultingPositions[3] + columnDatum.topMargin,
+                    columnWidth - columnDatum.leftMargin - columnDatum.rightMargin,
+                    fullColumnHeight - columnDatum.topMargin - columnDatum.bottomMargin);
+
+                relativeColumnXOffset += columnDatum.relativeWidth;
+            }
+        }
+        // what is this doing? Friedrich
+        for (int i = 0; i < columns.count; i++) {
+            for (int f = 0; f < columns.count; f++) {
                 if (f == i) continue;
-                if (qAbs(main[f]->shape()->position().x() - points[i].x()) < 10.0) {
+                if (qAbs(main[f]->shape()->position().x() - columnRects[i].x()) < 10.0) {
                     qSwap(main[f], main[i]);
                     break;
                 }
             }
         }
 
-        for (int i = columns - 1; i >= 0; i--) {
+        for (int i = columns.count - 1; i >= 0; i--) {
             main[i]->setFrameBehavior(Words::AutoCreateNewFrameBehavior);
             main[i]->setNewFrameBehavior(Words::ReconnectNewFrame);
             KoShape *shape = main[i]->shape();
-            shape->setPosition(points[i]);
-            shape->setSize(QSizeF(columnWidth, resultingPositions[4] - resultingPositions[3]));
+            shape->setPosition(columnRects[i].topLeft());
+            shape->setSize(columnRects[i].size());
         }
-        delete[] points;
+        delete[] columnRects;
 
         // We need to store the content rect so layout can place it's anchored shapes
         // correctly
